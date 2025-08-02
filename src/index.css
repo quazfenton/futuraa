@@ -1,42 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Avant-garde Industrial Technofuturism Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    /* Core Industrial Palette */
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
+    --surface: 0 0% 8%;
+    --surface-elevated: 0 0% 12%;
+    
+    /* Metallic System */
+    --chrome: 0 0% 85%;
+    --steel: 0 0% 65%;
+    --titanium: 220 2% 45%;
+    --graphite: 0 0% 25%;
+    
+    /* Electric Accents */
+    --electric-cyan: 180 100% 50%;
+    --electric-violet: 270 100% 65%;
+    --electric-amber: 45 100% 55%;
+    --electric-crimson: 0 100% 60%;
+    
+    /* Gradient System */
+    --gradient-chrome: linear-gradient(135deg, hsl(0 0% 95%), hsl(0 0% 75%));
+    --gradient-electric: linear-gradient(135deg, hsl(180 100% 50%), hsl(270 100% 65%));
+    --gradient-void: linear-gradient(180deg, hsl(0 0% 3%), hsl(0 0% 8%));
+    --gradient-steel: linear-gradient(45deg, hsl(0 0% 65%), hsl(220 2% 45%));
+    
+    /* Motion System */
+    --spring-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --fluid-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    
+    /* Shadows & Depths */
+    --shadow-void: 0 0 0 1px hsl(0 0% 15%), 0 20px 60px -10px hsl(0 0% 0% / 0.5);
+    --shadow-electric: 0 0 40px hsl(180 100% 50% / 0.3), 0 0 80px hsl(270 100% 65% / 0.2);
+    --shadow-chrome: 0 5px 20px hsl(0 0% 0% / 0.3), inset 0 1px 0 hsl(0 0% 100% / 0.1);
+    
+    /* Sizing & Spacing */
+    --radius: 2px;
 
     --sidebar-background: 0 0% 98%;
 
@@ -96,10 +103,174 @@ All colors MUST be HSL.
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-foreground;
+    background: var(--gradient-void);
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--surface));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--gradient-electric);
+    border-radius: 1px;
+  }
+}
+
+@layer components {
+  /* Interactive Canvas Effects */
+  .particle-trail {
+    pointer-events: none;
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: var(--gradient-electric);
+    border-radius: 50%;
+    opacity: 0;
+    animation: trail-fade 0.8s var(--fluid-ease) forwards;
+    z-index: 9999;
+  }
+
+  .morphing-blob {
+    filter: blur(1px);
+    animation: morph 8s var(--fluid-ease) infinite;
+  }
+
+  .kinetic-text {
+    background: var(--gradient-chrome);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: kinetic-shift 3s var(--spring-smooth) infinite;
+  }
+
+  .chrome-surface {
+    background: var(--gradient-chrome);
+    box-shadow: var(--shadow-chrome);
+    border: 1px solid hsl(var(--chrome) / 0.2);
+  }
+
+  .electric-glow {
+    background: var(--gradient-electric);
+    box-shadow: var(--shadow-electric);
+    animation: electric-pulse 2s var(--fluid-ease) infinite;
+  }
+
+  .void-panel {
+    background: hsl(var(--surface));
+    box-shadow: var(--shadow-void);
+    border: 1px solid hsl(var(--graphite) / 0.3);
+  }
+
+  /* Advanced Animations */
+  @keyframes trail-fade {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+
+  @keyframes morph {
+    0%, 100% {
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+      transform: translate(-10px, -5px) rotate(180deg);
+    }
+  }
+
+  @keyframes kinetic-shift {
+    0%, 100% {
+      transform: translateX(0) skewX(0deg);
+      filter: hue-rotate(0deg);
+    }
+    50% {
+      transform: translateX(2px) skewX(1deg);
+      filter: hue-rotate(30deg);
+    }
+  }
+
+  @keyframes electric-pulse {
+    0%, 100% {
+      box-shadow: var(--shadow-electric);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 60px hsl(180 100% 50% / 0.4), 0 0 120px hsl(270 100% 65% / 0.3);
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes float-y {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-float {
+    animation: float-y 6s var(--fluid-ease) infinite;
+  }
+
+  .animate-rotate-slow {
+    animation: rotate-slow 20s linear infinite;
+  }
+
+  /* Interaction States */
+  .interactive-element {
+    transition: all 0.3s var(--spring-smooth);
+    cursor: pointer;
+  }
+
+  .interactive-element:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.1);
+  }
+
+  .interactive-element:active {
+    transform: translateY(0) scale(0.98);
+    transition: all 0.1s var(--spring-bounce);
   }
 }
