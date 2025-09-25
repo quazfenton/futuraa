@@ -250,9 +250,9 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
       {/* Hide/Toggle Button - Fixed bottom right */}
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-graphite/80 border border-graphite/50 rounded flex items-center justify-center z-50 hover:bg-surface-elevated transition-colors"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-background border border-graphite/50 rounded flex items-center justify-center z-50 hover:bg-surface-elevated transition-colors"
       >
-        <Layers className="w-5 h-5 text-steel" />
+        <Layers className="w-5 h-5 text-background" />
       </button>
     </>
   );

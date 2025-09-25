@@ -422,8 +422,6 @@ export const ModularInterface = () => {
   const [lastOpenedModule, setLastOpenedModule] = useState<string | null>(null);
   const [modulePositions, setModulePositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
   const [moduleZIndexes, setModuleZIndexes] = useState<Record<string, number>>({});
-  const [lastClickTime, setLastClickTime] = useState<Record<string, number>>({});
-  const [previousStates, setPreviousStates] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
   const [isLightMode, setIsLightMode] = useState(false);
   const [showInfoBox, setShowInfoBox] = useState(true);
   const [infoText, setInfoText] = useState("DIGITAL WORKSPACE INITIALIZED");
@@ -433,7 +431,6 @@ export const ModularInterface = () => {
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const maxZIndex = useRef(100);
-  const [cursorTrails, setCursorTrails] = useState<Array<{ id: number; x: number; y: number }>>([]);
   
   const user: User = {
     name: "Digital Architect",
@@ -475,168 +472,6 @@ export const ModularInterface = () => {
     } catch {}
   }, []);
 
-  // If you have a central auth state, call postAuthToIframes(token) after login
-
-  // Cursor trail effect
-  useEffect(() => {
-    let trailId = 0;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const trail = {
-        id: trailId++,
-        x: e.clientX,
-        y: e.clientY
-      };
-      
-      setCursorTrails(prev => [...prev.slice(-8), trail]);
-      
-      // Create particle element
-      const particle = document.createElement('div');
-      particle.className = 'particle-trail';
-      particle.style.left = `${e.clientX}px`;
-      particle.style.top = `${e.clientY}px`;
-      document.body.appendChild(particle);
-      
-      // Remove after animation
-      setTimeout(() => {
-        particle.remove();
-      }, 1200);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  const openModule = (moduleId: string) => {
-    if (!activeModules.includes(moduleId)) {
-      const randomPos = generateRandomPosition();
-      const module = modules[moduleId];
-      
-      // Set random position if not already set
-      if (!modulePositions[moduleId]) {
-      setModulePositions(prev => ({
-        ...prev,
-        [moduleId]: { x: randomPos.x, y: randomPos.y, width: module.size.width, height: module.size.height }
-      }));
-      }
-      
-      // Bring to front
-      maxZIndex.current += 1;
-      setModuleZIndexes(prev => ({ ...prev, [moduleId]: maxZIndex.current }));
-      
-      setActiveModules(prev => [...prev, moduleId]);
-      setLastOpenedModule(moduleId);
-      setInfoText(`OPENING ${module.title.toUpperCase()}`);
-    } else {
-      // If already open, toggle visibility
-      closeModule(moduleId);
-    }
-  };
-
-  const closeModule = (moduleId: string) => {
-    setActiveModules(prev => prev.filter(id => id !== moduleId));
-    if (maximizedModule === moduleId) {
-      setMaximizedModule(null);
-    }
-    setInfoText(`CLOSED ${modules[moduleId].title.toUpperCase()}`);
-  };
-
-  const toggleMaximize = (moduleId: string) => {
-    const currentTime = Date.now();
-    const lastClick = lastClickTime[moduleId] || 0;
-    
-    // Double-click detection (within 300ms)
-    if (currentTime - lastClick < 300) {
-      const currentState = modulePositions[moduleId] || modules[moduleId];
-      
-      if (maximizedModule === moduleId) {
-        // Restore previous state
-        const prevState = previousStates[moduleId];
-        if (prevState) {
-          setModulePositions(prev => ({ ...prev, [moduleId]: prevState }));
-        }
-        setMaximizedModule(null);
-        setInfoText(`RESTORED ${modules[moduleId].title.toUpperCase()}`);
-      } else {
-        // Save current state before maximizing
-        const pos = modulePositions[moduleId] || modules[moduleId].position;
-        const size = modulePositions[moduleId] || modules[moduleId].size;
-        setPreviousStates(prev => ({ 
-          ...prev, 
-          [moduleId]: { 
-            x: pos.x, 
-            y: pos.y, 
-            width: size.width, 
-            height: size.height 
-          } 
-        }));
-        setMaximizedModule(moduleId);
-        setInfoText(`MAXIMIZED ${modules[moduleId].title.toUpperCase()}`);
-      }
-    }
-    
-    setLastClickTime(prev => ({ ...prev, [moduleId]: currentTime }));
-  };
-
-  const refreshModule = (moduleId: string) => {
-    // Refresh module content
-    console.log(`Refreshing module: ${moduleId}`);
-  };
-
-  const openFullVersion = (moduleId: string) => {
-    const module = modules[moduleId];
-    if (module?.subdomain) {
-      // Open in new tab with subdomain
-      window.open(`https://${module.subdomain}.${window.location.hostname}`, '_blank');
-    }
-  };
-
-  const toggleNavigation = () => {
-    setShowNavigation(prev => !prev);
-  };
-
-  const updateModulePosition = (moduleId: string, position: { x: number; y: number }, size: { width: number; height: number }) => {
-    setModulePositions(prev => ({
-      ...prev,
-      [moduleId]: { ...position, ...size }
-    }));
-  };
-
-  const bringToFront = (moduleId: string) => {
-    maxZIndex.current += 1;
-    setModuleZIndexes(prev => ({ ...prev, [moduleId]: maxZIndex.current }));
-  };
-
-  // Background dragging
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDraggingBackground && dragStartRef.current) {
-        const deltaX = e.clientX - dragStartRef.current.x;
-        const deltaY = e.clientY - dragStartRef.current.y;
-        setBackgroundOffset(prev => ({
-          x: prev.x + deltaX * 0.3, // Reduced movement for smooth effect
-          y: prev.y + deltaY * 0.3
-        }));
-        dragStartRef.current = { x: e.clientX, y: e.clientY };
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsDraggingBackground(false);
-      dragStartRef.current = null;
-    };
-
-    if (isDraggingBackground) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDraggingBackground]);
-
   // Info text cycling effect
   useEffect(() => {
     const texts = [
@@ -656,294 +491,360 @@ export const ModularInterface = () => {
     return () => clearInterval(interval);
   }, [showInfoBox]);
 
+  const toggleModule = (moduleId: string) => {
+    if (activeModules.includes(moduleId)) {
+      // Close module if already open
+      setActiveModules(prev => prev.filter(id => id !== moduleId));
+      if (maximizedModule === moduleId) setMaximizedModule(null);
+    } else {
+      // Open module
+      setActiveModules(prev => [...prev, moduleId]);
+      setLastOpenedModule(moduleId);
+      bringToFront(moduleId);
+      
+      // Set random position if not set
+      if (!modulePositions[moduleId]) {
+        const randomPos = generateRandomPosition();
+        setModulePositions(prev => ({
+          ...prev,
+          [moduleId]: { ...randomPos, ...modules[moduleId].size }
+        }));
+      }
+    }
+  };
+
+  const closeModule = (moduleId: string) => {
+    setActiveModules(prev => prev.filter(id => id !== moduleId));
+    if (maximizedModule === moduleId) setMaximizedModule(null);
+  };
+
+  const openModule = (moduleId: string) => {
+    if (!activeModules.includes(moduleId)) {
+      setActiveModules(prev => [...prev, moduleId]);
+      setLastOpenedModule(moduleId);
+      bringToFront(moduleId);
+      
+      // Set random position if not set
+      if (!modulePositions[moduleId]) {
+        const randomPos = generateRandomPosition();
+        setModulePositions(prev => ({
+          ...prev,
+          [moduleId]: { ...randomPos, ...modules[moduleId].size }
+        }));
+      }
+    }
+  };
+
+  const toggleMaximize = (moduleId: string) => {
+    setMaximizedModule(prev => prev === moduleId ? null : moduleId);
+  };
+
+  const refreshModule = (moduleId: string) => {
+    // Refresh iframe or module content
+    const iframe = document.querySelector(`iframe[data-module="${moduleId}"]`) as HTMLIFrameElement;
+    if (iframe) {
+      iframe.src = iframe.src;
+    }
+  };
+
+  const openFullVersion = (moduleId: string) => {
+    const module = modules[moduleId];
+    if (module?.subdomain) {
+      window.open(`https://${module.subdomain}.your-domain.com`, '_blank');
+    }
+  };
+
+  const bringToFront = (moduleId: string) => {
+    maxZIndex.current += 1;
+    setModuleZIndexes(prev => ({ ...prev, [moduleId]: maxZIndex.current }));
+  };
+
+  // Background dragging
   const handleBackgroundMouseDown = (e: React.MouseEvent) => {
-    // Only start dragging if clicking on empty space
     if (e.target === e.currentTarget) {
       setIsDraggingBackground(true);
       dragStartRef.current = { x: e.clientX, y: e.clientY };
     }
   };
 
+  const handleBackgroundMouseMove = (e: React.MouseEvent) => {
+    if (isDraggingBackground && dragStartRef.current) {
+      const deltaX = e.clientX - dragStartRef.current.x;
+      const deltaY = e.clientY - dragStartRef.current.y;
+      setBackgroundOffset(prev => ({
+        x: prev.x + deltaX * 0.3,
+        y: prev.y + deltaY * 0.3
+      }));
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+    }
+  };
+
+  const handleBackgroundMouseUp = () => {
+    setIsDraggingBackground(false);
+    dragStartRef.current = null;
+  };
+
+  // Dock scrolling
+  const handleDockMouseDown = (e: React.MouseEvent) => {
+    dockDragRef.current = { 
+      startX: e.clientX, 
+      startOffset: dockScrollOffset, 
+      dragging: true 
+    };
+  };
+
+  const handleDockMouseMove = (e: React.MouseEvent) => {
+    if (dockDragRef.current.dragging) {
+      const delta = e.clientX - dockDragRef.current.startX;
+      const maxOffset = -(Object.keys(modules).length - 6) * 60;
+      setDockScrollOffset(Math.max(Math.min(dockDragRef.current.startOffset + delta, 0), maxOffset));
+    }
+  };
+
+  const handleDockMouseUp = () => {
+    dockDragRef.current.dragging = false;
+  };
+
   return (
     <div 
-      className={`min-h-screen relative overflow-hidden transition-all duration-500 ${
-        isLightMode ? 'bg-gradient-to-br from-white to-gray-100' : ''
+      className={`relative min-h-screen overflow-hidden transition-colors duration-300 ${
+        isLightMode ? 'light-mode' : ''
       }`}
-      onMouseDown={handleBackgroundMouseDown}
       style={{
-        transform: `translate(${backgroundOffset.x}px, ${backgroundOffset.y}px)`,
-        cursor: isDraggingBackground ? 'grabbing' : 'default'
+        backgroundImage: `
+          repeating-linear-gradient(
+            45deg,
+            hsl(var(--surface)) 0px,
+            hsl(var(--surface)) 1px,
+            transparent 1px,
+            transparent 80px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            hsl(var(--surface-elevated)) 0px,
+            hsl(var(--surface-elevated)) 1px,
+            transparent 1px,
+            transparent 80px
+          )
+        `,
+        backgroundPosition: `${backgroundOffset.x}px ${backgroundOffset.y}px, ${backgroundOffset.x}px ${backgroundOffset.y}px`,
+        backgroundSize: '160px 160px, 160px 160px',
       }}
+      onMouseDown={handleBackgroundMouseDown}
+      onMouseMove={handleBackgroundMouseMove}
+      onMouseUp={handleBackgroundMouseUp}
     >
-      {/* Enhanced Info Box */}
-      {showInfoBox && (
-        <div className="fixed bottom-4 left-4 z-40">
-          <div className={`void-panel p-4 rounded-lg backdrop-blur-md max-w-80 min-w-64 transition-all duration-300 ${
-            isLightMode ? 'bg-white/80 border-gray-300' : ''
-          }`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-electric-cyan rounded-full animate-pulse" />
-                <span className={`text-xs font-mono tracking-wider ${
-                  isLightMode ? 'text-gray-800' : 'text-chrome'
-                }`}>SYSTEM STATUS</span>
-              </div>
-              <div className="flex gap-1">
-                <Button
-                  onClick={() => setIsLightMode(!isLightMode)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 opacity-60 hover:opacity-100"
-                >
-                  {isLightMode ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
-                </Button>
-                <Button
-                  onClick={() => setShowInfoBox(false)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 opacity-60 hover:opacity-100"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className={`text-sm font-mono cyber-text-glow ${
-                isLightMode ? 'text-gray-900' : 'text-electric-cyan'
-              }`}>
-                {infoText}
-              </div>
-              
-              {lastOpenedModule && (
-                <div className={`text-xs ${isLightMode ? 'text-gray-600' : 'text-steel'}`}>
-                  ACTIVE: {modules[lastOpenedModule].title}
-                </div>
-              )}
-              
-              <div className={`flex justify-between text-xs ${
-                isLightMode ? 'text-gray-600' : 'text-steel'
-              }`}>
-                <span>MODULES: {activeModules.length}/9</span>
-                <span>MODE: {isLightMode ? 'LIGHT' : 'DARK'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Show Info Box Button when hidden */}
-      {!showInfoBox && (
-        <Button
-          onClick={() => setShowInfoBox(true)}
-          className="fixed bottom-4 left-4 z-40 void-panel hover:electric-glow"
-          size="icon"
-        >
-          <User className="w-4 h-4" />
-        </Button>
-      )}
-
-      {/* Right-side Navigation Panel */}
-      <div className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ${
-        showNavigation ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      {/* Left Sidebar Navigation */}
+      {showNavigation && (
         <FluidNavigation 
           onNavigate={openModule}
           activeSection={lastOpenedModule}
         />
-      </div>
+      )}
 
-      {/* Module Windows */}
-      {activeModules.map(moduleId => {
-        const module = modules[moduleId];
-        const isMaximized = maximizedModule === moduleId;
-        const currentPosition = modulePositions[moduleId] || module.position;
-        const currentSize = modulePositions[moduleId] || module.size;
-        const zIndex = moduleZIndexes[moduleId] || 20;
-
-        return (
-          <Rnd
-            key={moduleId}
-            size={isMaximized ? { width: '100vw', height: '100vh' } : currentSize}
-            position={isMaximized ? { x: 0, y: 0 } : currentPosition}
-            onDragStart={() => bringToFront(moduleId)}
-            onDragStop={(e, d) => {
-              if (!isMaximized) {
-                updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
-              }
-            }}
-            onResizeStop={(e, direction, ref, delta, position) => {
-              if (!isMaximized) {
-                updateModulePosition(moduleId, position, {
-                  width: parseInt(ref.style.width),
-                  height: parseInt(ref.style.height)
-                });
-              }
-            }}
-            style={{ zIndex }}
-            dragHandleClassName="module-drag-handle"
-            enableResizing={!isMaximized}
-            bounds="parent"
-            minWidth={280}
-            minHeight={180}
-          >
-            <div 
-              className={`h-full group transition-all duration-300 ${
-                isLightMode 
-                  ? 'module-window' 
-                  : 'void-panel'
-              }`}
-              style={{
-                background: isLightMode ? 'hsl(0 0% 100% / 0.9)' : 'hsl(0 0% 3% / 0.95)',
-                boxShadow: isLightMode 
-                  ? '0 20px 60px -10px hsl(0 0% 0% / 0.1)' 
-                  : isDraggingBackground 
-                    ? '0 0 40px hsl(180 100% 50% / 0.3)' 
-                    : '0 20px 60px -10px hsl(0 0% 0% / 0.5)'
-              }}
-              onClick={() => bringToFront(moduleId)}
-            >
-              {/* Module Controls - No top bar, floating controls */}
-              <div className="absolute top-2 right-2 z-10 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  onClick={() => refreshModule(moduleId)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 hover:bg-electric-cyan/20 transition-all"
+      {/* System Status Box - Top Right */}
+      {showInfoBox && (
+        <div className="fixed top-4 right-4 void-panel rounded p-4 z-30 max-w-sm">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-mono text-sm text-chrome">
+                {lastOpenedModule && modules[lastOpenedModule] 
+                  ? `${modules[lastOpenedModule].title} Active`
+                  : 'DIGITAL WORKSPACE'
+                }
+              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsLightMode(!isLightMode)}
+                  className="p-1 hover:bg-surface-elevated rounded transition-colors"
                 >
-                  <RotateCcw className="w-3 h-3" />
-                </Button>
-                <Button
-                  onClick={() => toggleMaximize(moduleId)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 hover:bg-electric-violet/20 transition-all"
+                  {isLightMode ? (
+                    <Moon className="w-4 h-4 text-steel" />
+                  ) : (
+                    <Sun className="w-4 h-4 text-steel" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowInfoBox(false)}
+                  className="p-1 hover:bg-surface-elevated rounded transition-colors"
                 >
-                  <Maximize2 className="w-3 h-3" />
-                </Button>
-                <Button
-                  onClick={() => openFullVersion(moduleId)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 hover:bg-electric-amber/20 transition-all"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                </Button>
-                <Button
-                  onClick={() => closeModule(moduleId)}
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 hover:bg-electric-crimson/20 transition-all"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-              
-              {/* Module Content */}
-              <div 
-                className={isMaximized ? "h-full" : "h-[calc(100%-2.5rem)]"}
-                onDoubleClick={() => toggleMaximize(moduleId)}
-              >
-                {module.content}
+                  <X className="w-4 h-4 text-steel" />
+                </button>
               </div>
             </div>
-          </Rnd>
-        );
-      })}
-
-      {/* Bottom Dock */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="void-panel p-2 rounded backdrop-blur-md">
-          <div 
-            className="flex items-center gap-2 overflow-hidden max-w-screen-sm"
-            style={{
-              transform: `translateX(${dockScrollOffset}px)`,
-              transition: dockDragRef.current.dragging ? 'none' : 'transform 0.3s ease'
-            }}
-            onMouseDown={(e) => {
-              dockDragRef.current = { startX: e.clientX, startOffset: dockScrollOffset, dragging: true };
-            }}
-            onMouseMove={(e) => {
-              if (dockDragRef.current.dragging) {
-                const delta = e.clientX - dockDragRef.current.startX;
-                setDockScrollOffset(Math.max(Math.min(dockDragRef.current.startOffset + delta, 0), -(Object.values(modules).length - 6) * 50));
-              }
-            }}
-            onMouseUp={() => { dockDragRef.current.dragging = false; }}
-            onMouseLeave={() => { dockDragRef.current.dragging = false; }}
-          >
-            {Object.values(modules).map((module, index) => (
-              <Button
-                key={module.id}
-                onClick={() => openModule(module.id)}
-                className={`relative group w-12 h-12 transition-all duration-300 flex-shrink-0 dock-button ${
-                  activeModules.includes(module.id) ? 'active electric-glow' : 'hover:bg-surface-elevated'
-                }`}
-                title={module.title}
-                style={{
-                  animationDelay: `${index * 50}ms`
-                }}
-              >
-                <module.icon className={`w-6 h-6 transition-colors ${
-                  activeModules.includes(module.id)
-                    ? 'text-electric-cyan'
-                    : 'text-steel group-hover:text-electric-cyan'
-                }`} />
-                
-                {/* Active indicator */}
-                {activeModules.includes(module.id) && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-electric-cyan rounded-full animate-pulse" />
-                )}
-                
-                {/* Hover tooltip */}
-                <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                  <div className="text-xs font-mono px-2 py-1 rounded whitespace-nowrap bg-surface text-chrome">
-                    {module.title}
-                  </div>
+            
+            <div className="space-y-2">
+              <div className="text-xs">
+                <span className="text-steel">Status:</span>
+                <span className="text-electric-cyan ml-2 cyber-text-glow">{infoText}</span>
+              </div>
+              
+              {lastOpenedModule && modules[lastOpenedModule]?.subdomain && (
+                <div className="text-xs">
+                  <span className="text-steel">Hyperlink:</span>
+                  <a 
+                    href={`https://${modules[lastOpenedModule].subdomain}.your-domain.com`} 
+                    className="text-electric-cyan ml-2 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {modules[lastOpenedModule].subdomain}.your-domain.com
+                  </a>
                 </div>
-              </Button>
-            ))}
+              )}
+              
+              <div className="text-xs">
+                <span className="text-steel">User:</span>
+                <span className="text-chrome ml-2">{user.name}</span>
+                <span className={`ml-2 w-2 h-2 rounded-full inline-block ${
+                  user.status === 'online' ? 'bg-electric-cyan' : 
+                  user.status === 'away' ? 'bg-electric-amber' : 'bg-electric-crimson'
+                }`} />
+              </div>
+              
+              <div className="text-xs">
+                <span className="text-steel">Active Windows:</span>
+                <span className="text-chrome ml-2">{activeModules.length}</span>
+              </div>
+            </div>
           </div>
-          
-          {/* Scroll indicators */}
-          {Object.values(modules).length > 6 && (
-            <>
-              <Button
-                onClick={() => setDockScrollOffset(prev => Math.min(prev + 100, 0))}
-                className="absolute left-1 top-1/2 transform -translate-y-1/2 p-1 opacity-60 hover:opacity-100"
-                size="icon"
-                variant="ghost"
-                disabled={dockScrollOffset >= 0}
+        </div>
+      )}
+
+      {/* Module Windows */}
+      {activeModules.map(moduleId => (
+        <Rnd
+          key={moduleId}
+          size={modulePositions[moduleId] || modules[moduleId].size}
+          position={{ 
+            x: modulePositions[moduleId]?.x || modules[moduleId].position.x, 
+            y: modulePositions[moduleId]?.y || modules[moduleId].position.y 
+          }}
+          onDragStop={(e, d) => {
+            setModulePositions(prev => ({
+              ...prev,
+              [moduleId]: { 
+                ...prev[moduleId], 
+                x: d.x, 
+                y: d.y 
+              }
+            }));
+          }}
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setModulePositions(prev => ({
+              ...prev,
+              [moduleId]: {
+                x: position.x,
+                y: position.y,
+                width: parseInt(ref.style.width),
+                height: parseInt(ref.style.height)
+              }
+            }));
+          }}
+          minWidth={250}
+          minHeight={200}
+          bounds="parent"
+          className={`${maximizedModule === moduleId ? 'opacity-95' : 'opacity-90'} transition-opacity duration-200`}
+          style={{ zIndex: moduleZIndexes[moduleId] || 100 }}
+          onMouseDown={() => bringToFront(moduleId)}
+        >
+          <div 
+            className={`module-window rounded shadow-2xl h-full flex flex-col transition-all duration-300 ${
+              isLightMode ? 'bg-white/90' : ''
+            }`}
+            onDoubleClick={() => toggleMaximize(moduleId)}
+          >
+            {/* Window Controls */}
+            <div className="absolute top-3 right-3 flex gap-2 z-10">
+              <button
+                onClick={() => toggleMaximize(moduleId)}
+                className="p-1.5 hover:bg-surface-elevated/50 rounded transition-all duration-200 backdrop-blur-sm"
+                title="Maximize/Restore"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button
-                onClick={() => setDockScrollOffset(prev => Math.max(prev - 100, -(Object.values(modules).length - 6) * 60))}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 opacity-60 hover:opacity-100"
-                size="icon"
-                variant="ghost"
-                disabled={dockScrollOffset <= -(Object.values(modules).length - 6) * 60}
+                {maximizedModule === moduleId ? (
+                  <Minimize2 className="w-4 h-4 text-chrome hover:text-electric-cyan" />
+                ) : (
+                  <Maximize2 className="w-4 h-4 text-chrome hover:text-electric-cyan" />
+                )}
+              </button>
+              
+              {modules[moduleId]?.subdomain && (
+                <button
+                  onClick={() => openFullVersion(moduleId)}
+                  className="p-1.5 hover:bg-surface-elevated/50 rounded transition-all duration-200 backdrop-blur-sm"
+                  title="Open full version"
+                >
+                  <ExternalLink className="w-4 h-4 text-chrome hover:text-electric-violet" />
+                </button>
+              )}
+              
+              <button
+                onClick={() => refreshModule(moduleId)}
+                className="p-1.5 hover:bg-surface-elevated/50 rounded transition-all duration-200 backdrop-blur-sm"
+                title="Refresh"
               >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </>
-          )}
+                <RotateCcw className="w-4 h-4 text-chrome hover:text-electric-amber" />
+              </button>
+              
+              <button
+                onClick={() => closeModule(moduleId)}
+                className="p-1.5 hover:bg-surface-elevated/50 rounded transition-all duration-200 backdrop-blur-sm"
+                title="Close"
+              >
+                <X className="w-4 h-4 text-chrome hover:text-electric-crimson" />
+              </button>
+            </div>
+
+            {/* Module Content */}
+            <div className="flex-1 overflow-hidden relative z-5">
+              {modules[moduleId]?.content}
+            </div>
+          </div>
+        </Rnd>
+      ))}
+
+      {/* Dock */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
+        <div 
+          className={`flex items-center gap-2 p-2 backdrop-blur-md border border-graphite/30 rounded-full transition-colors duration-300 ${
+            isLightMode ? 'bg-white/80' : 'bg-surface/95'
+          }`}
+          style={{
+            transform: `translateX(${dockScrollOffset}px)`,
+            transition: dockDragRef.current.dragging ? 'none' : 'transform 0.3s ease-out'
+          }}
+          onMouseDown={handleDockMouseDown}
+          onMouseMove={handleDockMouseMove}
+          onMouseUp={handleDockMouseUp}
+          onMouseLeave={handleDockMouseUp}
+        >
+          {Object.entries(modules).map(([moduleId, module]) => (
+            <button
+              key={moduleId}
+              onClick={() => toggleModule(moduleId)}
+              className={`dock-button relative group w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 interactive-element ${
+                activeModules.includes(moduleId)
+                  ? 'active bg-electric-cyan/20 text-electric-cyan shadow-lg shadow-electric-cyan/30'
+                  : 'bg-surface-elevated hover:bg-surface-elevated/80 text-steel hover:text-chrome'
+              }`}
+              title={module.title}
+            >
+              <module.icon className="w-6 h-6" />
+              {activeModules.includes(moduleId) && (
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-electric-cyan rounded-full" />
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Background Grid - Larger tiles */}
-      <div 
-        className="fixed inset-0 pointer-events-none overflow-hidden opacity-5"
-        style={{
-          transform: `translate(${backgroundOffset.x * 0.1}px, ${backgroundOffset.y * 0.1}px)`,
-          backgroundImage: `
-            linear-gradient(hsl(var(--steel)) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(var(--steel)) 1px, transparent 1px)
-          `,
-          backgroundSize: '80px 80px'
-        }}
-      />
-
+      {/* Navigation Toggle Button */}
+      <button
+        onClick={() => setShowNavigation(!showNavigation)}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-background border border-graphite/50 rounded flex items-center justify-center z-50 hover:bg-surface-elevated transition-colors"
+      >
+        <Layers className="w-5 h-5 text-background" />
+      </button>
     </div>
   );
 };

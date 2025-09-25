@@ -117,11 +117,11 @@
   body {
     background: var(--gradient-void);
     color: hsl(var(--foreground));
-    font-family: 'Orbitron', system-ui, sans-serif;
+    font-family: 'Space Mono', monospace;
     font-weight: 400;
     line-height: 1.6;
     overflow-x: hidden;
-    cursor: crosshair;
+    cursor: default;
   }
 
   .font-mono {
@@ -373,7 +373,7 @@
     --surface-elevated: 0 0% 92%;
     --steel: 0 0% 40%;
     --chrome: 0 0% 20%;
-    --gradient-void: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 95%));
+    --gradient-void: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 94%));
   }
 
   .light-mode .module-window {
