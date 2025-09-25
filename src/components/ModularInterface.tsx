@@ -28,7 +28,8 @@ import {
   Pause,
   SkipForward,
   Volume2,
-  Heart
+  Heart,
+ Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FluidNavigation } from '@/components/FluidNavigation';
@@ -309,6 +310,108 @@ const modules: Record<string, ModuleWindow> = {
     position: { x: 280, y: 130 },
     size: { width: 440, height: 300 },
     subdomain: 'data'
+  },
+  chat: {
+    id: 'chat',
+    title: 'LLM Chat (binG)',
+    icon: Bot,
+    content: (
+      <div className="h-full flex flex-col">
+        <div className="flex-none p-2 text-xs text-steel">
+          Embedded from chat.quazfenton.xyz
+        </div>
+        <iframe 
+          src="https://chat.quazfenton.xyz?embed=1" 
+          className="flex-1 w-full h-full border-0 rounded"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          data-module="chat"
+          allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          title="binG Chat"
+        />
+      </div>
+    ),
+    position: { x: 160, y: 90 },
+    size: { width: 520, height: 640 },
+    subdomain: 'chat'
+  },
+  notes: {
+    id: 'notes',
+    title: 'Notes',
+    icon: FileText,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/notes" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="notes"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Notes Mini-App"
+      />
+    ),
+    position: { x: 120, y: 110 },
+    size: { width: 600, height: 520 },
+    subdomain: 'chat'
+  },
+  hfspaces: {
+    id: 'hfspaces',
+    title: 'HF Spaces',
+    icon: Image,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/hf-spaces" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="hfspaces"
+        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Hugging Face Spaces"
+      />
+    ),
+    position: { x: 240, y: 120 },
+    size: { width: 820, height: 620 },
+    subdomain: 'chat'
+  },
+  network: {
+    id: 'network',
+    title: 'Network Builder',
+    icon: Globe,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/network" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="network"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Network Request Builder"
+      />
+    ),
+    position: { x: 200, y: 160 },
+    size: { width: 760, height: 560 },
+    subdomain: 'chat'
+  },
+  github: {
+    id: 'github',
+    title: 'GitHub Explorer',
+    icon: Code,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/github" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="github"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="GitHub Explorer"
+      />
+    ),
+    position: { x: 300, y: 180 },
+    size: { width: 860, height: 640 },
+    subdomain: 'chat'
   }
 };
 
@@ -325,6 +428,7 @@ export const ModularInterface = () => {
   const [showInfoBox, setShowInfoBox] = useState(true);
   const [infoText, setInfoText] = useState("DIGITAL WORKSPACE INITIALIZED");
   const [dockScrollOffset, setDockScrollOffset] = useState(0);
+  const dockDragRef = useRef<{ startX: number; startOffset: number; dragging: boolean }>({ startX: 0, startOffset: 0, dragging: false });
   const [backgroundOffset, setBackgroundOffset] = useState({ x: 0, y: 0 });
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -357,6 +461,20 @@ export const ModularInterface = () => {
       y: padding + Math.random() * Math.max(maxY - padding, 0)
     };
   }, []);
+
+  // Broadcast auth token to iframes when available
+  const postAuthToIframes = useCallback((token: string) => {
+    try {
+      const iframes = document.querySelectorAll('iframe[data-module]') as NodeListOf<HTMLIFrameElement>;
+      iframes.forEach((frame) => {
+        try {
+          frame.contentWindow?.postMessage({ type: 'bing:auth', token }, 'https://chat.quazfenton.xyz');
+        } catch {}
+      });
+    } catch {}
+  }, []);
+
+  // If you have a central auth state, call postAuthToIframes(token) after login
 
   const openModule = (moduleId: string) => {
     if (!activeModules.includes(moduleId)) {
@@ -699,8 +817,19 @@ export const ModularInterface = () => {
             className="flex items-center gap-2 overflow-hidden max-w-screen-sm"
             style={{
               transform: `translateX(${dockScrollOffset}px)`,
-              transition: 'transform 0.3s ease'
+              transition: dockDragRef.current.dragging ? 'none' : 'transform 0.3s ease'
             }}
+            onMouseDown={(e) => {
+              dockDragRef.current = { startX: e.clientX, startOffset: dockScrollOffset, dragging: true };
+            }}
+            onMouseMove={(e) => {
+              if (dockDragRef.current.dragging) {
+                const delta = e.clientX - dockDragRef.current.startX;
+                setDockScrollOffset(Math.max(Math.min(dockDragRef.current.startOffset + delta, 0), -(Object.values(modules).length - 6) * 60));
+              }
+            }}
+            onMouseUp={() => { dockDragRef.current.dragging = false; }}
+            onMouseLeave={() => { dockDragRef.current.dragging = false; }}
           >
             {Object.values(modules).map((module, index) => (
               <Button

@@ -12,7 +12,8 @@ import {
   Globe,
   Code,
   Database,
-  User
+  User,
+  Bot
 } from 'lucide-react';
 
 interface NavItem {
@@ -76,6 +77,36 @@ const navItems: NavItem[] = [
     label: 'Data Vault',
     icon: Database,
     description: 'Information repository'
+  },
+  {
+    id: 'chat',
+    label: 'LLM Chat',
+    icon: Bot,
+    description: 'chat.quazfenton.xyz'
+  },
+  {
+    id: 'notes',
+    label: 'Notes',
+    icon: FileText,
+    description: 'Rich Markdown notes'
+  },
+  {
+    id: 'hfspaces',
+    label: 'HF Spaces',
+    icon: Image,
+    description: 'Hugging Face models & demos'
+  },
+  {
+    id: 'network',
+    label: 'Network Builder',
+    icon: Globe,
+    description: 'HTTP requests & presets'
+  },
+  {
+    id: 'github',
+    label: 'GitHub Explorer',
+    icon: Code,
+    description: 'Browse repos & files'
   }
 ];
 
