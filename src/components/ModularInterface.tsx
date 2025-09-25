@@ -433,6 +433,7 @@ export const ModularInterface = () => {
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const maxZIndex = useRef(100);
+  const [cursorTrails, setCursorTrails] = useState<Array<{ id: number; x: number; y: number }>>([]);
   
   const user: User = {
     name: "Digital Architect",
@@ -476,6 +477,36 @@ export const ModularInterface = () => {
 
   // If you have a central auth state, call postAuthToIframes(token) after login
 
+  // Cursor trail effect
+  useEffect(() => {
+    let trailId = 0;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const trail = {
+        id: trailId++,
+        x: e.clientX,
+        y: e.clientY
+      };
+      
+      setCursorTrails(prev => [...prev.slice(-8), trail]);
+      
+      // Create particle element
+      const particle = document.createElement('div');
+      particle.className = 'particle-trail';
+      particle.style.left = `${e.clientX}px`;
+      particle.style.top = `${e.clientY}px`;
+      document.body.appendChild(particle);
+      
+      // Remove after animation
+      setTimeout(() => {
+        particle.remove();
+      }, 1200);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const openModule = (moduleId: string) => {
     if (!activeModules.includes(moduleId)) {
       const randomPos = generateRandomPosition();
@@ -483,10 +514,10 @@ export const ModularInterface = () => {
       
       // Set random position if not already set
       if (!modulePositions[moduleId]) {
-        setModulePositions(prev => ({
-          ...prev,
-          [moduleId]: { ...randomPos, ...module.size }
-        }));
+      setModulePositions(prev => ({
+        ...prev,
+        [moduleId]: { x: randomPos.x, y: randomPos.y, width: module.size.width, height: module.size.height }
+      }));
       }
       
       // Bring to front
@@ -528,7 +559,17 @@ export const ModularInterface = () => {
         setInfoText(`RESTORED ${modules[moduleId].title.toUpperCase()}`);
       } else {
         // Save current state before maximizing
-        setPreviousStates(prev => ({ ...prev, [moduleId]: currentState }));
+        const pos = modulePositions[moduleId] || modules[moduleId].position;
+        const size = modulePositions[moduleId] || modules[moduleId].size;
+        setPreviousStates(prev => ({ 
+          ...prev, 
+          [moduleId]: { 
+            x: pos.x, 
+            y: pos.y, 
+            width: size.width, 
+            height: size.height 
+          } 
+        }));
         setMaximizedModule(moduleId);
         setInfoText(`MAXIMIZED ${modules[moduleId].title.toUpperCase()}`);
       }
@@ -747,54 +788,56 @@ export const ModularInterface = () => {
             minHeight={180}
           >
             <div 
-              className={`h-full border transition-all duration-300 ${
+              className={`h-full group transition-all duration-300 ${
                 isLightMode 
-                  ? 'bg-white/90 border-gray-300 shadow-lg' 
-                  : 'void-panel border-graphite/30'
+                  ? 'module-window' 
+                  : 'void-panel'
               }`}
+              style={{
+                background: isLightMode ? 'hsl(0 0% 100% / 0.9)' : 'hsl(0 0% 3% / 0.95)',
+                boxShadow: isLightMode 
+                  ? '0 20px 60px -10px hsl(0 0% 0% / 0.1)' 
+                  : isDraggingBackground 
+                    ? '0 0 40px hsl(180 100% 50% / 0.3)' 
+                    : '0 20px 60px -10px hsl(0 0% 0% / 0.5)'
+              }}
               onClick={() => bringToFront(moduleId)}
             >
-              {/* Module Header - Hidden when maximized */}
-              {!isMaximized && (
-                <div className={`module-drag-handle flex items-center justify-between p-2 border-b transition-all duration-300 ${
-                  isLightMode 
-                    ? 'bg-gray-50 border-gray-200' 
-                    : 'border-graphite/20 bg-surface-elevated'
-                }`}>
-                  <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                    <module.icon className="w-4 h-4 text-electric-cyan" />
-                    <span className={`text-sm font-mono ${
-                      isLightMode ? 'text-gray-700' : 'text-steel'
-                    }`}>{module.title}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      onClick={() => refreshModule(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-cyan/20 transition-all"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => openFullVersion(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-violet/20 transition-all"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => closeModule(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-crimson/20 transition-all"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {/* Module Controls - No top bar, floating controls */}
+              <div className="absolute top-2 right-2 z-10 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  onClick={() => refreshModule(moduleId)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 hover:bg-electric-cyan/20 transition-all"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                </Button>
+                <Button
+                  onClick={() => toggleMaximize(moduleId)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 hover:bg-electric-violet/20 transition-all"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                </Button>
+                <Button
+                  onClick={() => openFullVersion(moduleId)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 hover:bg-electric-amber/20 transition-all"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
+                <Button
+                  onClick={() => closeModule(moduleId)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 hover:bg-electric-crimson/20 transition-all"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
               
               {/* Module Content */}
               <div 
@@ -808,11 +851,9 @@ export const ModularInterface = () => {
         );
       })}
 
-      {/* Enhanced Bottom Dock */}
+      {/* Bottom Dock */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-        <div className={`p-3 rounded-lg backdrop-blur-md transition-all duration-300 ${
-          isLightMode ? 'bg-white/80 border border-gray-300' : 'void-panel'
-        }`}>
+        <div className="void-panel p-2 rounded backdrop-blur-md">
           <div 
             className="flex items-center gap-2 overflow-hidden max-w-screen-sm"
             style={{
@@ -825,7 +866,7 @@ export const ModularInterface = () => {
             onMouseMove={(e) => {
               if (dockDragRef.current.dragging) {
                 const delta = e.clientX - dockDragRef.current.startX;
-                setDockScrollOffset(Math.max(Math.min(dockDragRef.current.startOffset + delta, 0), -(Object.values(modules).length - 6) * 60));
+                setDockScrollOffset(Math.max(Math.min(dockDragRef.current.startOffset + delta, 0), -(Object.values(modules).length - 6) * 50));
               }
             }}
             onMouseUp={() => { dockDragRef.current.dragging = false; }}
@@ -835,41 +876,28 @@ export const ModularInterface = () => {
               <Button
                 key={module.id}
                 onClick={() => openModule(module.id)}
-                className={`relative group p-3 transition-all duration-300 flex-shrink-0 ${
-                  isLightMode 
-                    ? 'bg-gray-100 hover:bg-gray-200 border border-gray-300' 
-                    : 'bg-black hover:bg-gray-900 border border-gray-700'
-                } ${
-                  activeModules.includes(module.id) 
-                    ? 'ring-2 ring-electric-cyan shadow-electric' 
-                    : 'hover:ring-1 hover:ring-electric-cyan/50'
+                className={`relative group w-12 h-12 transition-all duration-300 flex-shrink-0 dock-button ${
+                  activeModules.includes(module.id) ? 'active electric-glow' : 'hover:bg-surface-elevated'
                 }`}
                 title={module.title}
                 style={{
-                  animationDelay: `${index * 50}ms`,
-                  boxShadow: activeModules.includes(module.id) 
-                    ? '0 0 20px rgba(0, 255, 255, 0.3)' 
-                    : ''
+                  animationDelay: `${index * 50}ms`
                 }}
               >
-                <module.icon className={`w-5 h-5 transition-colors ${
+                <module.icon className={`w-6 h-6 transition-colors ${
                   activeModules.includes(module.id)
                     ? 'text-electric-cyan'
-                    : isLightMode 
-                      ? 'text-gray-600 group-hover:text-electric-cyan' 
-                      : 'text-steel group-hover:text-electric-cyan'
+                    : 'text-steel group-hover:text-electric-cyan'
                 }`} />
                 
                 {/* Active indicator */}
                 {activeModules.includes(module.id) && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-electric-cyan rounded-full animate-pulse border-2 border-background" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-electric-cyan rounded-full animate-pulse" />
                 )}
                 
                 {/* Hover tooltip */}
                 <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                  <div className={`text-xs font-mono px-2 py-1 rounded whitespace-nowrap ${
-                    isLightMode ? 'bg-gray-800 text-white' : 'bg-surface text-chrome'
-                  }`}>
+                  <div className="text-xs font-mono px-2 py-1 rounded whitespace-nowrap bg-surface text-chrome">
                     {module.title}
                   </div>
                 </div>
@@ -903,37 +931,19 @@ export const ModularInterface = () => {
         </div>
       </div>
 
-      {/* Background Effects - Infinite Scroll Grid */}
+      {/* Background Grid - Larger tiles */}
       <div 
-        className="fixed inset-0 pointer-events-none overflow-hidden opacity-10"
+        className="fixed inset-0 pointer-events-none overflow-hidden opacity-5"
         style={{
           transform: `translate(${backgroundOffset.x * 0.1}px, ${backgroundOffset.y * 0.1}px)`,
           backgroundImage: `
-            linear-gradient(${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px),
-            linear-gradient(90deg, ${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px)
+            linear-gradient(hsl(var(--steel)) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--steel)) 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px'
+          backgroundSize: '80px 80px'
         }}
       />
 
-      {/* Floating ambient elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute w-1 h-1 rounded-full animate-float ${
-              isLightMode ? 'bg-gray-400' : 'bg-electric-cyan'
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${6 + Math.random() * 4}s`,
-              opacity: 0.6
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };
