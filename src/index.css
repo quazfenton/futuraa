@@ -250,6 +250,67 @@
     }
   }
 
+  @keyframes cyber-text-glow {
+    0%, 100% {
+      text-shadow: 0 0 10px hsl(180 100% 50% / 0.5);
+      transform: translateX(0);
+    }
+    25% {
+      text-shadow: 0 0 20px hsl(180 100% 50% / 0.8), 0 0 30px hsl(270 100% 65% / 0.4);
+      transform: translateX(1px);
+    }
+    75% {
+      text-shadow: 0 0 15px hsl(180 100% 50% / 0.6), 0 0 25px hsl(45 100% 55% / 0.3);
+      transform: translateX(-1px);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes glitch-text {
+    0%, 100% {
+      transform: translateX(0);
+      filter: hue-rotate(0deg);
+    }
+    10% {
+      transform: translateX(-2px) skewX(1deg);
+      filter: hue-rotate(90deg);
+    }
+    20% {
+      transform: translateX(2px) skewX(-1deg);
+      filter: hue-rotate(180deg);
+    }
+    30% {
+      transform: translateX(-1px) skewX(0.5deg);
+      filter: hue-rotate(270deg);
+    }
+    40% {
+      transform: translateX(1px) skewX(-0.5deg);
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  @keyframes dock-button-hover {
+    0% {
+      transform: scale(1) translateY(0);
+    }
+    50% {
+      transform: scale(1.1) translateY(-4px);
+    }
+    100% {
+      transform: scale(1.05) translateY(-2px);
+    }
+  }
+
   .animate-float {
     animation: float-y 6s var(--fluid-ease) infinite;
   }
@@ -258,7 +319,19 @@
     animation: rotate-slow 20s linear infinite;
   }
 
-  /* Interaction States */
+  .animate-fade-in {
+    animation: fade-in-up 0.6s var(--spring-smooth) forwards;
+  }
+
+  .cyber-text-glow {
+    animation: cyber-text-glow 3s var(--fluid-ease) infinite;
+  }
+
+  .glitch-text {
+    animation: glitch-text 0.3s var(--spring-bounce) infinite;
+  }
+
+  /* Enhanced Interaction States */
   .interactive-element {
     transition: all 0.3s var(--spring-smooth);
     cursor: pointer;
@@ -267,10 +340,65 @@
   .interactive-element:hover {
     transform: translateY(-2px) scale(1.02);
     filter: brightness(1.1);
+    animation: dock-button-hover 0.3s var(--spring-smooth) forwards;
   }
 
   .interactive-element:active {
     transform: translateY(0) scale(0.98);
     transition: all 0.1s var(--spring-bounce);
+  }
+
+  /* Module Window Styles */
+  .module-window {
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--graphite) / 0.3);
+    box-shadow: 
+      0 20px 60px -10px hsl(0 0% 0% / 0.5),
+      0 0 0 1px hsl(var(--chrome) / 0.1);
+  }
+
+  .module-window:hover {
+    box-shadow: 
+      0 25px 80px -10px hsl(0 0% 0% / 0.6),
+      0 0 0 1px hsl(var(--electric-cyan) / 0.2),
+      0 0 40px hsl(var(--electric-cyan) / 0.1);
+  }
+
+  /* Light mode overrides */
+  .light-mode {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+    --surface: 0 0% 98%;
+    --surface-elevated: 0 0% 95%;
+    --steel: 0 0% 40%;
+    --chrome: 0 0% 20%;
+  }
+
+  /* Dock styles */
+  .dock-button {
+    transition: all 0.3s var(--spring-smooth);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dock-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-electric);
+    opacity: 0;
+    transition: opacity 0.3s var(--fluid-ease);
+  }
+
+  .dock-button:hover::before {
+    opacity: 0.1;
+  }
+
+  .dock-button.active {
+    box-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4);
+  }
+
+  .dock-button.active::before {
+    opacity: 0.2;
   }
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { 
   Maximize2, 
@@ -21,7 +21,14 @@ import {
   Settings,
   Database,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Moon,
+  Sun,
+  Play,
+  Pause,
+  SkipForward,
+  Volume2,
+  Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FluidNavigation } from '@/components/FluidNavigation';
@@ -43,16 +50,126 @@ interface User {
   lastActivity: string;
 }
 
+// Enhanced module components
+const MusicPlayer = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  
+  const tracks = [
+    { title: "Neon Dreams", artist: "Synthwave Collective", duration: "3:42" },
+    { title: "Digital Rain", artist: "Cyber Pulse", duration: "4:15" },
+    { title: "Electric Void", artist: "Tech Noir", duration: "5:28" },
+    { title: "Chrome Horizon", artist: "Future Bass", duration: "3:55" }
+  ];
+
+  return (
+    <div className="h-full p-4 bg-gradient-to-b from-surface to-surface-elevated">
+      <div className="space-y-4">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-electric rounded mx-auto mb-3 flex items-center justify-center">
+            <Music className="w-8 h-8 text-background" />
+          </div>
+          <h3 className="font-mono text-chrome mb-1">{tracks[currentTrack].title}</h3>
+          <p className="text-sm text-steel">{tracks[currentTrack].artist}</p>
+        </div>
+        
+        <div className="flex items-center justify-center gap-3">
+          <Button size="sm" variant="ghost" className="hover:bg-electric-cyan/20">
+            <SkipForward className="w-4 h-4 rotate-180" />
+          </Button>
+          <Button 
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="bg-electric-cyan/20 hover:bg-electric-cyan/30"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </Button>
+          <Button size="sm" variant="ghost" className="hover:bg-electric-cyan/20">
+            <SkipForward className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {tracks.map((track, index) => (
+            <div 
+              key={index}
+              className={`p-2 rounded cursor-pointer transition-colors ${
+                index === currentTrack ? 'bg-electric-cyan/20' : 'hover:bg-surface-elevated'
+              }`}
+              onClick={() => setCurrentTrack(index)}
+            >
+              <div className="flex justify-between text-xs">
+                <span className="text-chrome">{track.title}</span>
+                <span className="text-steel">{track.duration}</span>
+              </div>
+              <div className="text-xs text-steel">{track.artist}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ImageGallery = () => {
+  const [currentImage, setCurrentImage] = useState(0);
+  const images = [
+    { url: "/api/placeholder/300/200", title: "Cyber Landscape" },
+    { url: "/api/placeholder/300/200", title: "Digital Art" },
+    { url: "/api/placeholder/300/200", title: "Neon City" },
+    { url: "/api/placeholder/300/200", title: "Tech Noir" }
+  ];
+
+  const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
+  const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+
+  return (
+    <div className="h-full relative overflow-hidden">
+      <img 
+        src={images[currentImage].url} 
+        alt={images[currentImage].title}
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent" />
+      <div className="absolute bottom-4 left-4 right-4">
+        <h3 className="font-mono text-chrome mb-2">{images[currentImage].title}</h3>
+        <div className="flex justify-between items-center">
+          <button onClick={prevImage} className="p-2 hover:bg-surface/50 rounded">
+            <ChevronLeft className="w-4 h-4 text-chrome" />
+          </button>
+          <div className="flex gap-1">
+            {images.map((_, index) => (
+              <div 
+                key={index}
+                className={`w-2 h-2 rounded-full ${
+                  index === currentImage ? 'bg-electric-cyan' : 'bg-steel/50'
+                }`}
+              />
+            ))}
+          </div>
+          <button onClick={nextImage} className="p-2 hover:bg-surface/50 rounded">
+            <ChevronRight className="w-4 h-4 text-chrome" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const modules: Record<string, ModuleWindow> = {
   canvas: {
     id: 'canvas',
     title: 'Digital Canvas',
     icon: Palette,
     content: (
-      <div className="h-full void-panel p-4 flex items-center justify-center">
+      <div className="h-full p-4 flex items-center justify-center bg-gradient-to-br from-surface to-surface-elevated">
         <div className="text-center space-y-4">
-          <Palette className="w-12 h-12 text-electric-cyan mx-auto" />
+          <Palette className="w-12 h-12 text-electric-cyan mx-auto animate-pulse" />
           <p className="text-steel">Interactive Design Canvas</p>
+          <iframe 
+            src="about:blank" 
+            className="w-full h-32 rounded border border-graphite/30"
+            title="Canvas Preview"
+          />
         </div>
       </div>
     ),
@@ -64,14 +181,7 @@ const modules: Record<string, ModuleWindow> = {
     id: 'gallery',
     title: 'Visual Gallery',
     icon: Image,
-    content: (
-      <div className="h-full void-panel p-4 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Image className="w-12 h-12 text-electric-violet mx-auto" />
-          <p className="text-steel">Right-click to navigate</p>
-        </div>
-      </div>
-    ),
+    content: <ImageGallery />,
     position: { x: 200, y: 150 },
     size: { width: 450, height: 350 },
     subdomain: 'gallery'
@@ -81,10 +191,29 @@ const modules: Record<string, ModuleWindow> = {
     title: 'Digital Journal',
     icon: FileText,
     content: (
-      <div className="h-full void-panel p-4 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <FileText className="w-12 h-12 text-electric-amber mx-auto" />
-          <p className="text-steel">Written Content & Blog</p>
+      <div className="h-full p-4 bg-gradient-to-b from-surface to-surface-elevated">
+        <div className="space-y-4">
+          <div className="text-center mb-4">
+            <FileText className="w-8 h-8 text-electric-amber mx-auto mb-2" />
+            <h3 className="font-mono text-chrome">Digital Journal</h3>
+          </div>
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            <div className="p-3 bg-surface-elevated rounded border-l-2 border-electric-amber">
+              <div className="text-xs text-steel mb-1">2024.01.15</div>
+              <h4 className="text-sm font-mono text-chrome mb-1">Cyber Aesthetics</h4>
+              <p className="text-xs text-steel">Exploring the intersection of technology and art...</p>
+            </div>
+            <div className="p-3 bg-surface-elevated rounded border-l-2 border-electric-violet">
+              <div className="text-xs text-steel mb-1">2024.01.12</div>
+              <h4 className="text-sm font-mono text-chrome mb-1">Future UI Patterns</h4>
+              <p className="text-xs text-steel">Designing interfaces for tomorrow's world...</p>
+            </div>
+            <div className="p-3 bg-surface-elevated rounded border-l-2 border-electric-cyan">
+              <div className="text-xs text-steel mb-1">2024.01.10</div>
+              <h4 className="text-sm font-mono text-chrome mb-1">Digital Minimalism</h4>
+              <p className="text-xs text-steel">Less is more in the digital age...</p>
+            </div>
+          </div>
         </div>
       </div>
     ),
@@ -96,16 +225,9 @@ const modules: Record<string, ModuleWindow> = {
     id: 'music',
     title: 'Sonic Interface',
     icon: Music,
-    content: (
-      <div className="h-full void-panel p-4 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Music className="w-12 h-12 text-electric-cyan mx-auto" />
-          <p className="text-steel">Audio Playlist & Controls</p>
-        </div>
-      </div>
-    ),
+    content: <MusicPlayer />,
     position: { x: 150, y: 120 },
-    size: { width: 380, height: 280 },
+    size: { width: 380, height: 320 },
     subdomain: 'music'
   },
   video: {
@@ -196,6 +318,17 @@ export const ModularInterface = () => {
   const [showNavigation, setShowNavigation] = useState(true);
   const [lastOpenedModule, setLastOpenedModule] = useState<string | null>(null);
   const [modulePositions, setModulePositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
+  const [moduleZIndexes, setModuleZIndexes] = useState<Record<string, number>>({});
+  const [lastClickTime, setLastClickTime] = useState<Record<string, number>>({});
+  const [previousStates, setPreviousStates] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
+  const [isLightMode, setIsLightMode] = useState(false);
+  const [showInfoBox, setShowInfoBox] = useState(true);
+  const [infoText, setInfoText] = useState("DIGITAL WORKSPACE INITIALIZED");
+  const [dockScrollOffset, setDockScrollOffset] = useState(0);
+  const [backgroundOffset, setBackgroundOffset] = useState({ x: 0, y: 0 });
+  const [isDraggingBackground, setIsDraggingBackground] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const maxZIndex = useRef(100);
   
   const user: User = {
     name: "Digital Architect",
@@ -214,10 +347,40 @@ export const ModularInterface = () => {
     }
   }, [activeModules.length, showNavigation]);
 
+  // Generate random position avoiding overlaps
+  const generateRandomPosition = useCallback(() => {
+    const padding = 50;
+    const maxX = window.innerWidth - 400 - padding;
+    const maxY = window.innerHeight - 300 - padding;
+    return {
+      x: padding + Math.random() * Math.max(maxX - padding, 0),
+      y: padding + Math.random() * Math.max(maxY - padding, 0)
+    };
+  }, []);
+
   const openModule = (moduleId: string) => {
     if (!activeModules.includes(moduleId)) {
+      const randomPos = generateRandomPosition();
+      const module = modules[moduleId];
+      
+      // Set random position if not already set
+      if (!modulePositions[moduleId]) {
+        setModulePositions(prev => ({
+          ...prev,
+          [moduleId]: { ...randomPos, ...module.size }
+        }));
+      }
+      
+      // Bring to front
+      maxZIndex.current += 1;
+      setModuleZIndexes(prev => ({ ...prev, [moduleId]: maxZIndex.current }));
+      
       setActiveModules(prev => [...prev, moduleId]);
       setLastOpenedModule(moduleId);
+      setInfoText(`OPENING ${module.title.toUpperCase()}`);
+    } else {
+      // If already open, toggle visibility
+      closeModule(moduleId);
     }
   };
 
@@ -226,10 +389,34 @@ export const ModularInterface = () => {
     if (maximizedModule === moduleId) {
       setMaximizedModule(null);
     }
+    setInfoText(`CLOSED ${modules[moduleId].title.toUpperCase()}`);
   };
 
   const toggleMaximize = (moduleId: string) => {
-    setMaximizedModule(prev => prev === moduleId ? null : moduleId);
+    const currentTime = Date.now();
+    const lastClick = lastClickTime[moduleId] || 0;
+    
+    // Double-click detection (within 300ms)
+    if (currentTime - lastClick < 300) {
+      const currentState = modulePositions[moduleId] || modules[moduleId];
+      
+      if (maximizedModule === moduleId) {
+        // Restore previous state
+        const prevState = previousStates[moduleId];
+        if (prevState) {
+          setModulePositions(prev => ({ ...prev, [moduleId]: prevState }));
+        }
+        setMaximizedModule(null);
+        setInfoText(`RESTORED ${modules[moduleId].title.toUpperCase()}`);
+      } else {
+        // Save current state before maximizing
+        setPreviousStates(prev => ({ ...prev, [moduleId]: currentState }));
+        setMaximizedModule(moduleId);
+        setInfoText(`MAXIMIZED ${modules[moduleId].title.toUpperCase()}`);
+      }
+    }
+    
+    setLastClickTime(prev => ({ ...prev, [moduleId]: currentTime }));
   };
 
   const refreshModule = (moduleId: string) => {
@@ -256,8 +443,147 @@ export const ModularInterface = () => {
     }));
   };
 
+  const bringToFront = (moduleId: string) => {
+    maxZIndex.current += 1;
+    setModuleZIndexes(prev => ({ ...prev, [moduleId]: maxZIndex.current }));
+  };
+
+  // Background dragging
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingBackground && dragStartRef.current) {
+        const deltaX = e.clientX - dragStartRef.current.x;
+        const deltaY = e.clientY - dragStartRef.current.y;
+        setBackgroundOffset(prev => ({
+          x: prev.x + deltaX * 0.3, // Reduced movement for smooth effect
+          y: prev.y + deltaY * 0.3
+        }));
+        dragStartRef.current = { x: e.clientX, y: e.clientY };
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingBackground(false);
+      dragStartRef.current = null;
+    };
+
+    if (isDraggingBackground) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingBackground]);
+
+  // Info text cycling effect
+  useEffect(() => {
+    const texts = [
+      "DIGITAL WORKSPACE ACTIVE",
+      "CYBER INTERFACE READY", 
+      "AVANT-GARDE SYSTEM ONLINE",
+      "TECHNOFUTURE LOADING...",
+      "ELECTRIC DREAMS INITIALIZED"
+    ];
+    
+    const interval = setInterval(() => {
+      if (showInfoBox) {
+        setInfoText(texts[Math.floor(Math.random() * texts.length)]);
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [showInfoBox]);
+
+  const handleBackgroundMouseDown = (e: React.MouseEvent) => {
+    // Only start dragging if clicking on empty space
+    if (e.target === e.currentTarget) {
+      setIsDraggingBackground(true);
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+    }
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div 
+      className={`min-h-screen relative overflow-hidden transition-all duration-500 ${
+        isLightMode ? 'bg-gradient-to-br from-white to-gray-100' : ''
+      }`}
+      onMouseDown={handleBackgroundMouseDown}
+      style={{
+        transform: `translate(${backgroundOffset.x}px, ${backgroundOffset.y}px)`,
+        cursor: isDraggingBackground ? 'grabbing' : 'default'
+      }}
+    >
+      {/* Enhanced Info Box */}
+      {showInfoBox && (
+        <div className="fixed bottom-4 left-4 z-40">
+          <div className={`void-panel p-4 rounded-lg backdrop-blur-md max-w-80 min-w-64 transition-all duration-300 ${
+            isLightMode ? 'bg-white/80 border-gray-300' : ''
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-electric-cyan rounded-full animate-pulse" />
+                <span className={`text-xs font-mono tracking-wider ${
+                  isLightMode ? 'text-gray-800' : 'text-chrome'
+                }`}>SYSTEM STATUS</span>
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  onClick={() => setIsLightMode(!isLightMode)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 opacity-60 hover:opacity-100"
+                >
+                  {isLightMode ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
+                </Button>
+                <Button
+                  onClick={() => setShowInfoBox(false)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 opacity-60 hover:opacity-100"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className={`text-sm font-mono cyber-text-glow ${
+                isLightMode ? 'text-gray-900' : 'text-electric-cyan'
+              }`}>
+                {infoText}
+              </div>
+              
+              {lastOpenedModule && (
+                <div className={`text-xs ${isLightMode ? 'text-gray-600' : 'text-steel'}`}>
+                  ACTIVE: {modules[lastOpenedModule].title}
+                </div>
+              )}
+              
+              <div className={`flex justify-between text-xs ${
+                isLightMode ? 'text-gray-600' : 'text-steel'
+              }`}>
+                <span>MODULES: {activeModules.length}/9</span>
+                <span>MODE: {isLightMode ? 'LIGHT' : 'DARK'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show Info Box Button when hidden */}
+      {!showInfoBox && (
+        <Button
+          onClick={() => setShowInfoBox(true)}
+          className="fixed bottom-4 left-4 z-40 void-panel hover:electric-glow"
+          size="icon"
+        >
+          <User className="w-4 h-4" />
+        </Button>
+      )}
+
       {/* Right-side Navigation Panel */}
       <div className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ${
         showNavigation ? 'translate-x-0' : 'translate-x-full'
@@ -268,29 +594,20 @@ export const ModularInterface = () => {
         />
       </div>
 
-      {/* Navigation Toggle Button */}
-      <Button
-        onClick={toggleNavigation}
-        className={`fixed top-4 right-4 z-40 void-panel hover:electric-glow transition-all duration-300 ${
-          showNavigation ? 'translate-x-0' : 'translate-x-0'
-        }`}
-        size="icon"
-      >
-        {showNavigation ? <ChevronRight className="w-4 h-4" /> : <Layers className="w-4 h-4" />}
-      </Button>
-
       {/* Module Windows */}
       {activeModules.map(moduleId => {
         const module = modules[moduleId];
         const isMaximized = maximizedModule === moduleId;
         const currentPosition = modulePositions[moduleId] || module.position;
         const currentSize = modulePositions[moduleId] || module.size;
+        const zIndex = moduleZIndexes[moduleId] || 20;
 
         return (
           <Rnd
             key={moduleId}
             size={isMaximized ? { width: '100vw', height: '100vh' } : currentSize}
             position={isMaximized ? { x: 0, y: 0 } : currentPosition}
+            onDragStart={() => bringToFront(moduleId)}
             onDragStop={(e, d) => {
               if (!isMaximized) {
                 updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
@@ -304,58 +621,68 @@ export const ModularInterface = () => {
                 });
               }
             }}
-            className={`${isMaximized ? 'z-30' : 'z-20'}`}
+            style={{ zIndex }}
             dragHandleClassName="module-drag-handle"
             enableResizing={!isMaximized}
             bounds="parent"
-            minWidth={300}
-            minHeight={200}
+            minWidth={280}
+            minHeight={180}
           >
-            <div className="h-full void-panel border border-graphite/30">
-              {/* Module Header */}
-              <div className="module-drag-handle flex items-center justify-between p-2 border-b border-graphite/20 bg-surface-elevated">
-                <div className="flex items-center gap-2">
-                  <module.icon className="w-4 h-4 text-electric-cyan" />
-                  <span className="text-sm font-mono text-steel">{module.title}</span>
+            <div 
+              className={`h-full border transition-all duration-300 ${
+                isLightMode 
+                  ? 'bg-white/90 border-gray-300 shadow-lg' 
+                  : 'void-panel border-graphite/30'
+              }`}
+              onClick={() => bringToFront(moduleId)}
+            >
+              {/* Module Header - Hidden when maximized */}
+              {!isMaximized && (
+                <div className={`module-drag-handle flex items-center justify-between p-2 border-b transition-all duration-300 ${
+                  isLightMode 
+                    ? 'bg-gray-50 border-gray-200' 
+                    : 'border-graphite/20 bg-surface-elevated'
+                }`}>
+                  <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                    <module.icon className="w-4 h-4 text-electric-cyan" />
+                    <span className={`text-sm font-mono ${
+                      isLightMode ? 'text-gray-700' : 'text-steel'
+                    }`}>{module.title}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      onClick={() => refreshModule(moduleId)}
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-cyan/20 transition-all"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={() => openFullVersion(moduleId)}
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-violet/20 transition-all"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={() => closeModule(moduleId)}
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-crimson/20 transition-all"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    onClick={() => refreshModule(moduleId)}
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-electric-cyan/20"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    onClick={() => openFullVersion(moduleId)}
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-electric-violet/20"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    onClick={() => toggleMaximize(moduleId)}
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-electric-amber/20"
-                  >
-                    {isMaximized ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-                  </Button>
-                  <Button
-                    onClick={() => closeModule(moduleId)}
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-electric-crimson/20"
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
+              )}
               
               {/* Module Content */}
-              <div className="h-[calc(100%-2.5rem)]">
+              <div 
+                className={isMaximized ? "h-full" : "h-[calc(100%-2.5rem)]"}
+                onDoubleClick={() => toggleMaximize(moduleId)}
+              >
                 {module.content}
               </div>
             </div>
@@ -363,79 +690,120 @@ export const ModularInterface = () => {
         );
       })}
 
-      {/* Bottom Horizontal Module Catalog */}
+      {/* Enhanced Bottom Dock */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="void-panel p-3 rounded-lg backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            {Object.values(modules).map(module => (
+        <div className={`p-3 rounded-lg backdrop-blur-md transition-all duration-300 ${
+          isLightMode ? 'bg-white/80 border border-gray-300' : 'void-panel'
+        }`}>
+          <div 
+            className="flex items-center gap-2 overflow-hidden max-w-screen-sm"
+            style={{
+              transform: `translateX(${dockScrollOffset}px)`,
+              transition: 'transform 0.3s ease'
+            }}
+          >
+            {Object.values(modules).map((module, index) => (
               <Button
                 key={module.id}
                 onClick={() => openModule(module.id)}
-                className={`relative group p-3 void-panel hover:electric-glow transition-all duration-300 ${
-                  activeModules.includes(module.id) ? 'bg-electric-cyan/20' : ''
+                className={`relative group p-3 transition-all duration-300 flex-shrink-0 ${
+                  isLightMode 
+                    ? 'bg-gray-100 hover:bg-gray-200 border border-gray-300' 
+                    : 'bg-black hover:bg-gray-900 border border-gray-700'
+                } ${
+                  activeModules.includes(module.id) 
+                    ? 'ring-2 ring-electric-cyan shadow-electric' 
+                    : 'hover:ring-1 hover:ring-electric-cyan/50'
                 }`}
                 title={module.title}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                  boxShadow: activeModules.includes(module.id) 
+                    ? '0 0 20px rgba(0, 255, 255, 0.3)' 
+                    : ''
+                }}
               >
-                <module.icon className="w-5 h-5 text-steel group-hover:text-electric-cyan transition-colors" />
+                <module.icon className={`w-5 h-5 transition-colors ${
+                  activeModules.includes(module.id)
+                    ? 'text-electric-cyan'
+                    : isLightMode 
+                      ? 'text-gray-600 group-hover:text-electric-cyan' 
+                      : 'text-steel group-hover:text-electric-cyan'
+                }`} />
+                
+                {/* Active indicator */}
                 {activeModules.includes(module.id) && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-electric-cyan rounded-full animate-pulse" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-electric-cyan rounded-full animate-pulse border-2 border-background" />
                 )}
+                
+                {/* Hover tooltip */}
+                <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                  <div className={`text-xs font-mono px-2 py-1 rounded whitespace-nowrap ${
+                    isLightMode ? 'bg-gray-800 text-white' : 'bg-surface text-chrome'
+                  }`}>
+                    {module.title}
+                  </div>
+                </div>
               </Button>
             ))}
           </div>
+          
+          {/* Scroll indicators */}
+          {Object.values(modules).length > 6 && (
+            <>
+              <Button
+                onClick={() => setDockScrollOffset(prev => Math.min(prev + 100, 0))}
+                className="absolute left-1 top-1/2 transform -translate-y-1/2 p-1 opacity-60 hover:opacity-100"
+                size="icon"
+                variant="ghost"
+                disabled={dockScrollOffset >= 0}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => setDockScrollOffset(prev => Math.max(prev - 100, -(Object.values(modules).length - 6) * 60))}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 opacity-60 hover:opacity-100"
+                size="icon"
+                variant="ghost"
+                disabled={dockScrollOffset <= -(Object.values(modules).length - 6) * 60}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Enhanced Status Panel */}
-      <div className="fixed bottom-4 left-4 z-40">
-        <div className="void-panel p-4 rounded-lg backdrop-blur-md max-w-sm">
-          <div className="space-y-3">
-            {/* User Status */}
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-8 h-8 bg-gradient-electric rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-background" />
-                </div>
-                <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-surface ${
-                  user.status === 'online' ? 'bg-electric-cyan' : 
-                  user.status === 'away' ? 'bg-electric-amber' : 'bg-electric-crimson'
-                }`} />
-              </div>
-              <div>
-                <div className="text-sm font-mono text-chrome">{user.name}</div>
-                <div className="text-xs text-steel">{user.lastActivity}</div>
-              </div>
-            </div>
+      {/* Background Effects - Infinite Scroll Grid */}
+      <div 
+        className="fixed inset-0 pointer-events-none overflow-hidden opacity-10"
+        style={{
+          transform: `translate(${backgroundOffset.x * 0.1}px, ${backgroundOffset.y * 0.1}px)`,
+          backgroundImage: `
+            linear-gradient(${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px),
+            linear-gradient(90deg, ${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}
+      />
 
-            {/* Last Opened Module Info */}
-            {lastOpenedModule && (
-              <div className="border-t border-graphite/30 pt-3">
-                <div className="text-xs text-steel mb-1">LAST OPENED</div>
-                <div className="flex items-center gap-2 animate-fade-in">
-                  {(() => {
-                    const module = modules[lastOpenedModule];
-                    return (
-                      <>
-                        <module.icon className="w-4 h-4 text-electric-cyan animate-pulse" />
-                        <span className="text-sm font-mono text-chrome kinetic-text">
-                          {module.title}
-                        </span>
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
-
-            {/* System Status */}
-            <div className="border-t border-graphite/30 pt-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-steel">MODULES</span>
-                <span className="text-electric-cyan font-mono">{activeModules.length}/9</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Floating ambient elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className={`absolute w-1 h-1 rounded-full animate-float ${
+              isLightMode ? 'bg-gray-400' : 'bg-electric-cyan'
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.8}s`,
+              animationDuration: `${6 + Math.random() * 4}s`,
+              opacity: 0.6
+            }}
+          />
+        ))}
       </div>
     </div>
   );
