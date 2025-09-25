@@ -1,404 +1,143 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+:root {
+  --font-sans: 'Orbitron', 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  /* Sidebar sizing */
+  --sidebar-width: 64px;
+  --sidebar-width-icon: 48px;
 
-/* Avant-garde Industrial Technofuturism Design System */
+  /* Grid size larger (revert to aut0 tile size) */
+  --grid-size: 80px;
 
-@layer base {
-  :root {
-    /* Core Industrial Palette */
-    --background: 0 0% 3%;
-    --foreground: 0 0% 98%;
-    --surface: 0 0% 8%;
-    --surface-elevated: 0 0% 12%;
-    
-    /* Metallic System */
-    --chrome: 0 0% 85%;
-    --steel: 0 0% 65%;
-    --titanium: 220 2% 45%;
-    --graphite: 0 0% 25%;
-    
-    /* Electric Accents */
-    --electric-cyan: 180 100% 50%;
-    --electric-violet: 270 100% 65%;
-    --electric-amber: 45 100% 55%;
-    --electric-crimson: 0 100% 60%;
-    
-    /* Gradient System */
-    --gradient-chrome: linear-gradient(135deg, hsl(0 0% 95%), hsl(0 0% 75%));
-    --gradient-electric: linear-gradient(135deg, hsl(180 100% 50%), hsl(270 100% 65%));
-    --gradient-void: linear-gradient(180deg, hsl(0 0% 3%), hsl(0 0% 8%));
-    --gradient-steel: linear-gradient(45deg, hsl(0 0% 65%), hsl(220 2% 45%));
-    
-    /* Motion System */
-    --spring-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --spring-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --fluid-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    
-    /* Shadows & Depths */
-    --shadow-void: 0 0 0 1px hsl(0 0% 15%), 0 20px 60px -10px hsl(0 0% 0% / 0.5);
-    --shadow-electric: 0 0 40px hsl(180 100% 50% / 0.3), 0 0 80px hsl(270 100% 65% / 0.2);
-    --shadow-chrome: 0 5px 20px hsl(0 0% 0% / 0.3), inset 0 1px 0 hsl(0 0% 100% / 0.1);
-    
-    /* Sizing & Spacing */
-    --radius: 2px;
+  /* Window pitch & electric colors */
+  --window-bg: 2 2% 6%;
+  --surface: 2 2% 6%;
+  --electric-cyan: 184 98% 50%;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+  /* Shadows */
+  --shadow-drag: 0 20px 60px -10px hsl(0 0% 0% / 0.7), 0 0 60px 8px hsl(var(--electric-cyan) / 0.08);
 }
 
-@layer base {
-  * {
-    @apply border-0;
-    box-sizing: border-box;
-  }
-
-  html {
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    background: var(--gradient-void);
-    color: hsl(var(--foreground));
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 2px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--surface));
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: var(--gradient-electric);
-    border-radius: 1px;
-  }
+/* Body font replaced with aut0 font */
+body {
+  font-family: var(--font-sans);
 }
 
-@layer components {
-  /* Interactive Canvas Effects */
-  .particle-trail {
-    pointer-events: none;
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    background: var(--gradient-electric);
-    border-radius: 50%;
-    opacity: 0;
-    animation: trail-fade 0.8s var(--fluid-ease) forwards;
-    z-index: 9999;
-  }
-
-  .morphing-blob {
-    filter: blur(1px);
-    animation: morph 8s var(--fluid-ease) infinite;
-  }
-
-  .kinetic-text {
-    background: var(--gradient-chrome);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: kinetic-shift 3s var(--spring-smooth) infinite;
-  }
-
-  .chrome-surface {
-    background: var(--gradient-chrome);
-    box-shadow: var(--shadow-chrome);
-    border: 1px solid hsl(var(--chrome) / 0.2);
-  }
-
-  .electric-glow {
-    background: var(--gradient-electric);
-    box-shadow: var(--shadow-electric);
-    animation: electric-pulse 2s var(--fluid-ease) infinite;
-  }
-
-  .void-panel {
-    background: hsl(var(--surface));
-    box-shadow: var(--shadow-void);
-    border: 1px solid hsl(var(--graphite) / 0.3);
-  }
-
-  /* Advanced Animations */
-  @keyframes trail-fade {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.3);
-    }
-  }
-
-  @keyframes morph {
-    0%, 100% {
-      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-      transform: translate(0, 0) rotate(0deg);
-    }
-    50% {
-      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-      transform: translate(-10px, -5px) rotate(180deg);
-    }
-  }
-
-  @keyframes kinetic-shift {
-    0%, 100% {
-      transform: translateX(0) skewX(0deg);
-      filter: hue-rotate(0deg);
-    }
-    50% {
-      transform: translateX(2px) skewX(1deg);
-      filter: hue-rotate(30deg);
-    }
-  }
-
-  @keyframes electric-pulse {
-    0%, 100% {
-      box-shadow: var(--shadow-electric);
-      transform: scale(1);
-    }
-    50% {
-      box-shadow: 0 0 60px hsl(180 100% 50% / 0.4), 0 0 120px hsl(270 100% 65% / 0.3);
-      transform: scale(1.02);
-    }
-  }
-
-  @keyframes float-y {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  @keyframes rotate-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes cyber-text-glow {
-    0%, 100% {
-      text-shadow: 0 0 10px hsl(180 100% 50% / 0.5);
-      transform: translateX(0);
-    }
-    25% {
-      text-shadow: 0 0 20px hsl(180 100% 50% / 0.8), 0 0 30px hsl(270 100% 65% / 0.4);
-      transform: translateX(1px);
-    }
-    75% {
-      text-shadow: 0 0 15px hsl(180 100% 50% / 0.6), 0 0 25px hsl(45 100% 55% / 0.3);
-      transform: translateX(-1px);
-    }
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes glitch-text {
-    0%, 100% {
-      transform: translateX(0);
-      filter: hue-rotate(0deg);
-    }
-    10% {
-      transform: translateX(-2px) skewX(1deg);
-      filter: hue-rotate(90deg);
-    }
-    20% {
-      transform: translateX(2px) skewX(-1deg);
-      filter: hue-rotate(180deg);
-    }
-    30% {
-      transform: translateX(-1px) skewX(0.5deg);
-      filter: hue-rotate(270deg);
-    }
-    40% {
-      transform: translateX(1px) skewX(-0.5deg);
-      filter: hue-rotate(360deg);
-    }
-  }
-
-  @keyframes dock-button-hover {
-    0% {
-      transform: scale(1) translateY(0);
-    }
-    50% {
-      transform: scale(1.1) translateY(-4px);
-    }
-    100% {
-      transform: scale(1.05) translateY(-2px);
-    }
-  }
-
-  .animate-float {
-    animation: float-y 6s var(--fluid-ease) infinite;
-  }
-
-  .animate-rotate-slow {
-    animation: rotate-slow 20s linear infinite;
-  }
-
-  .animate-fade-in {
-    animation: fade-in-up 0.6s var(--spring-smooth) forwards;
-  }
-
-  .cyber-text-glow {
-    animation: cyber-text-glow 3s var(--fluid-ease) infinite;
-  }
-
-  .glitch-text {
-    animation: glitch-text 0.3s var(--spring-bounce) infinite;
-  }
-
-  /* Enhanced Interaction States */
-  .interactive-element {
-    transition: all 0.3s var(--spring-smooth);
-    cursor: pointer;
-  }
-
-  .interactive-element:hover {
-    transform: translateY(-2px) scale(1.02);
-    filter: brightness(1.1);
-    animation: dock-button-hover 0.3s var(--spring-smooth) forwards;
-  }
-
-  .interactive-element:active {
-    transform: translateY(0) scale(0.98);
-    transition: all 0.1s var(--spring-bounce);
-  }
-
-  /* Module Window Styles */
-  .module-window {
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--graphite) / 0.3);
-    box-shadow: 
-      0 20px 60px -10px hsl(0 0% 0% / 0.5),
-      0 0 0 1px hsl(var(--chrome) / 0.1);
-  }
-
-  .module-window:hover {
-    box-shadow: 
-      0 25px 80px -10px hsl(0 0% 0% / 0.6),
-      0 0 0 1px hsl(var(--electric-cyan) / 0.2),
-      0 0 40px hsl(var(--electric-cyan) / 0.1);
-  }
-
-  /* Light mode overrides */
-  .light-mode {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
-    --surface: 0 0% 98%;
-    --surface-elevated: 0 0% 95%;
-    --steel: 0 0% 40%;
-    --chrome: 0 0% 20%;
-  }
-
-  /* Dock styles */
-  .dock-button {
-    transition: all 0.3s var(--spring-smooth);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .dock-button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gradient-electric);
-    opacity: 0;
-    transition: opacity 0.3s var(--fluid-ease);
-  }
-
-  .dock-button:hover::before {
-    opacity: 0.1;
-  }
-
-  .dock-button.active {
-    box-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4);
-  }
-
-  .dock-button.active::before {
-    opacity: 0.2;
-  }
+/* Background grid — larger tiles and subtle contrast */
+.app-background {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  background-color: hsl(222 8% 4%);
+  background-attachment: fixed;
 }
+
+/* Reduce ambient micro-sprites: keep a small number, larger & slower */
+.particle {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  opacity: 0.85;
+  animation: float-slow 12s linear infinite;
+}
+
+/* Cursor trail (restore aut0 style) */
+.cursor-trail {
+  pointer-events: none;
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(0,255,220,0.95), rgba(0,140,200,0.6));
+  transform: translate(-50%, -50%) scale(0.6);
+  mix-blend-mode: screen;
+  transition: transform 120ms linear, opacity 400ms ease-out;
+  z-index: 9999;
+}
+
+/* Module window visual: darker background, remove top chrome bar (visual only),
+   add drag glow effect while dragging */
+.module-window {
+  background: hsl(var(--surface));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(0 0% 0% / 0.25);
+  border-radius: 0;
+  box-shadow: 0 6px 20px -8px rgba(0,0,0,0.7);
+  overflow: hidden;
+}
+
+/* Visually remove top border/bar while preserving functionality */
+.module-window .titlebar {
+  display: none; /* visually removed; window still keeps controls elsewhere */
+}
+
+/* Drag glow */
+.module-window.dragging {
+  box-shadow: var(--shadow-drag);
+  transform: translateZ(0);
+}
+
+/* Dock buttons: larger squares like aut0, subtle chrome border */
+.dock {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dock-button {
+  width: 48px;
+  height: 48px;
+  background: hsl(0 0% 7%);
+  border: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.18s ease;
+}
+
+.dock-button.active {
+  box-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4);
+  background: linear-gradient(135deg, rgba(0,170,255,0.06), rgba(0,120,200,0.04));
+}
+
+/* Info/Modules box moved top-right and darker */
+.info-box {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.5));
+  color: #aeeffb;
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 10px 12px;
+  border-radius: 4px;
+  min-width: 120px;
+  z-index: 60;
+}
+
+/* Light mode: dimmer white gradient and windows turn white */
+.light-mode {
+  --background: 0 0% 98%;
+  --surface: 0 0% 98%;
+  --foreground: 200 20% 12%;
+}
+
+.light-mode .module-window {
+  background: linear-gradient(180deg, #fff, #fbfbfb);
+  color: #111;
+}
+
+/* Scroll limits for Sidebar and added scrollbar styling */
+.sidebar-creator,
+[data-sidebar="sidebar"] > .flex-1 {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* small scrollbar */
+[data-sidebar="sidebar"]::-webkit-scrollbar { width: 6px; }
+[data-sidebar="sidebar"]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 6px; }
