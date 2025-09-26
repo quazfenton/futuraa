@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -117,15 +117,14 @@
   body {
     background: var(--gradient-void);
     color: hsl(var(--foreground));
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', system-ui, sans-serif;
     font-weight: 400;
     line-height: 1.6;
     overflow-x: hidden;
-    cursor: default;
   }
 
   .font-mono {
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   /* Custom scrollbar */
@@ -148,12 +147,12 @@
   .particle-trail {
     pointer-events: none;
     position: fixed;
-    width: 2px;
-    height: 2px;
-    background: hsl(var(--electric-cyan));
+    width: 4px;
+    height: 4px;
+    background: var(--gradient-electric);
     border-radius: 50%;
-    opacity: 0.8;
-    animation: trail-fade 1.2s ease-out forwards;
+    opacity: 0;
+    animation: trail-fade 0.8s var(--fluid-ease) forwards;
     z-index: 9999;
   }
 
@@ -352,8 +351,7 @@
   /* Module Window Styles */
   .module-window {
     backdrop-filter: blur(20px);
-    background: hsl(var(--surface) / 0.95);
-    border: none;
+    border: 1px solid hsl(var(--graphite) / 0.3);
     box-shadow: 
       0 20px 60px -10px hsl(0 0% 0% / 0.5),
       0 0 0 1px hsl(var(--chrome) / 0.1);
@@ -362,25 +360,18 @@
   .module-window:hover {
     box-shadow: 
       0 25px 80px -10px hsl(0 0% 0% / 0.6),
-      0 0 40px hsl(var(--electric-cyan) / 0.3);
+      0 0 0 1px hsl(var(--electric-cyan) / 0.2),
+      0 0 40px hsl(var(--electric-cyan) / 0.1);
   }
 
   /* Light mode overrides */
   .light-mode {
-    --background: 0 0% 98%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 10%;
-    --surface: 0 0% 95%;
-    --surface-elevated: 0 0% 92%;
+    --surface: 0 0% 98%;
+    --surface-elevated: 0 0% 95%;
     --steel: 0 0% 40%;
     --chrome: 0 0% 20%;
-    --gradient-void: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 94%));
-  }
-
-  .light-mode .module-window {
-    background: hsl(0 0% 100% / 0.9);
-    box-shadow: 
-      0 20px 60px -10px hsl(0 0% 0% / 0.1),
-      0 0 0 1px hsl(0 0% 80%);
   }
 
   /* Dock styles */
