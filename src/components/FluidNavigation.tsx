@@ -141,10 +141,10 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
         }}
       />
 
-      {/* Floating Navigation Panel - Right Side */}
+      {/* Floating Navigation Panel - Left Side */}
       <div
-        className={`fixed top-1/2 right-8 transform -translate-y-1/2 transition-all duration-500 ${
-          isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+        className={`fixed top-1/2 left-8 transform -translate-y-1/2 transition-all duration-500 ${
+          isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
         } z-40`}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => {
@@ -153,7 +153,7 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
         }}
       >
         {isExpanded && (
-          <nav className="void-panel p-6 rounded-lg backdrop-blur-md min-w-[320px] max-w-[380px]">
+          <nav className="void-panel p-6 rounded-lg backdrop-blur-md min-w-[320px] max-w-[380px] max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="mb-6">
               <div className="text-sm font-mono text-steel mb-2 tracking-wider">
@@ -218,7 +218,7 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
               ))}
             </div>
 
-            {/* Collapsible Digital Architect Section */}
+            {/* Creator Info Section */}
             {showStatus && (
               <div className="border-t border-graphite/30 pt-4 animate-fade-in">
                 <div className="flex items-center justify-between mb-3">
@@ -227,8 +227,8 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                       <User className="w-3 h-3 text-background" />
                     </div>
                     <div>
-                      <div className="text-xs font-mono text-chrome">Digital Architect</div>
-                      <div className="text-xs text-steel">System Active</div>
+                      <div className="text-xs font-mono text-chrome">Creator Info</div>
+                      <div className="text-xs text-steel">Quaz Fenton</div>
                     </div>
                   </div>
                   <button
@@ -239,16 +239,35 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                   </button>
                 </div>
                 
-                {/* Status Grid */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-steel">MODULES</span>
-                    <span className="text-electric-cyan font-mono">0/9</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-steel">STATUS</span>
-                    <span className="text-electric-cyan font-mono">READY</span>
-                  </div>
+                {/* Social Links */}
+                <div className="space-y-2">
+                  <a 
+                    href="https://github.com/quazfenton" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
+                  >
+                    <Code className="w-3 h-3" />
+                    <span className="font-mono">GitHub</span>
+                  </a>
+                  <a 
+                    href="https://twitter.com/quazfenton" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
+                  >
+                    <Globe className="w-3 h-3" />
+                    <span className="font-mono">Twitter</span>
+                  </a>
+                  <a 
+                    href="https://quazfenton.xyz" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
+                  >
+                    <Globe className="w-3 h-3" />
+                    <span className="font-mono">Portfolio</span>
+                  </a>
                 </div>
               </div>
             )}

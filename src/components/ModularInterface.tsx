@@ -433,6 +433,7 @@ export const ModularInterface = () => {
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const maxZIndex = useRef(100);
+  const [draggingModule, setDraggingModule] = useState<string | null>(null);
   
   const user: User = {
     name: "Digital Architect",
@@ -626,19 +627,22 @@ export const ModularInterface = () => {
   return (
     <div 
       className={`min-h-screen relative overflow-hidden transition-all duration-500 ${
-        isLightMode ? 'bg-gradient-to-br from-white to-gray-100' : ''
+        isLightMode ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : ''
       }`}
       onMouseDown={handleBackgroundMouseDown}
       style={{
         transform: `translate(${backgroundOffset.x}px, ${backgroundOffset.y}px)`,
-        cursor: isDraggingBackground ? 'grabbing' : 'default'
+        cursor: isDraggingBackground ? 'grabbing' : 'default',
+        ...(isLightMode && {
+          background: 'linear-gradient(135deg, rgba(249, 250, 251, 0.95) 0%, rgba(255, 255, 255, 0.9) 50%, rgba(243, 244, 246, 0.95) 100%)'
+        })
       }}
     >
-      {/* Enhanced Info Box */}
+      {/* Enhanced Info Box - Top Right */}
       {showInfoBox && (
-        <div className="fixed bottom-4 left-4 z-40">
+        <div className="fixed top-4 right-4 z-40">
           <div className={`void-panel p-4 rounded-lg backdrop-blur-md max-w-80 min-w-64 transition-all duration-300 ${
-            isLightMode ? 'bg-white/80 border-gray-300' : ''
+            isLightMode ? 'bg-white/80 border-gray-300' : 'bg-black/90'
           }`}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -674,9 +678,16 @@ export const ModularInterface = () => {
                 {infoText}
               </div>
               
-              {lastOpenedModule && (
+              {lastOpenedModule && modules[lastOpenedModule]?.subdomain && (
                 <div className={`text-xs ${isLightMode ? 'text-gray-600' : 'text-steel'}`}>
-                  ACTIVE: {modules[lastOpenedModule].title}
+                  <a 
+                    href={`https://${modules[lastOpenedModule].subdomain}.${window.location.hostname}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-electric-cyan transition-colors"
+                  >
+                    {modules[lastOpenedModule].title} →
+                  </a>
                 </div>
               )}
               
@@ -695,22 +706,31 @@ export const ModularInterface = () => {
       {!showInfoBox && (
         <Button
           onClick={() => setShowInfoBox(true)}
-          className="fixed bottom-4 left-4 z-40 void-panel hover:electric-glow"
+          className="fixed top-4 right-4 z-40 void-panel hover:electric-glow"
           size="icon"
         >
           <User className="w-4 h-4" />
         </Button>
       )}
 
-      {/* Right-side Navigation Panel */}
-      <div className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ${
-        showNavigation ? 'translate-x-0' : 'translate-x-full'
+      {/* Left-side Navigation Panel */}
+      <div className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ${
+        showNavigation ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <FluidNavigation 
           onNavigate={openModule}
           activeSection={lastOpenedModule}
         />
       </div>
+      
+      {/* Navigation Toggle Button - Bottom Right */}
+      <Button
+        onClick={toggleNavigation}
+        className="fixed bottom-4 right-4 z-40 bg-black hover:bg-gray-900 border border-gray-700"
+        size="icon"
+      >
+        <Layers className="w-4 h-4" />
+      </Button>
 
       {/* Module Windows */}
       {activeModules.map(moduleId => {
@@ -725,11 +745,15 @@ export const ModularInterface = () => {
             key={moduleId}
             size={isMaximized ? { width: '100vw', height: '100vh' } : currentSize}
             position={isMaximized ? { x: 0, y: 0 } : currentPosition}
-            onDragStart={() => bringToFront(moduleId)}
+            onDragStart={() => {
+              bringToFront(moduleId);
+              setDraggingModule(moduleId);
+            }}
             onDragStop={(e, d) => {
               if (!isMaximized) {
                 updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
               }
+              setDraggingModule(null);
             }}
             onResizeStop={(e, direction, ref, delta, position) => {
               if (!isMaximized) {
@@ -747,19 +771,26 @@ export const ModularInterface = () => {
             minHeight={180}
           >
             <div 
-              className={`h-full border transition-all duration-300 ${
+              className={`h-full border rounded-sm transition-all duration-300 ${
                 isLightMode 
-                  ? 'bg-white/90 border-gray-300 shadow-lg' 
-                  : 'void-panel border-graphite/30'
-              }`}
+                  ? 'bg-white border-gray-300 shadow-lg' 
+                  : 'bg-black/95 border-graphite/50'
+              } ${draggingModule === moduleId ? 'shadow-electric' : ''}`}
               onClick={() => bringToFront(moduleId)}
+              style={{
+                boxShadow: draggingModule === moduleId 
+                  ? '0 0 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(120, 0, 255, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.3)'
+                  : isLightMode 
+                    ? '0 20px 60px -10px rgba(0, 0, 0, 0.2)' 
+                    : '0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 60px -10px rgba(0, 0, 0, 0.8)'
+              }}
             >
-              {/* Module Header - Hidden when maximized */}
+              {/* Module Header - Minimal style like aut0 */}
               {!isMaximized && (
                 <div className={`module-drag-handle flex items-center justify-between p-2 border-b transition-all duration-300 ${
                   isLightMode 
                     ? 'bg-gray-50 border-gray-200' 
-                    : 'border-graphite/20 bg-surface-elevated'
+                    : 'border-black/50 bg-black/50'
                 }`}>
                   <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
                     <module.icon className="w-4 h-4 text-electric-cyan" />
@@ -768,6 +799,15 @@ export const ModularInterface = () => {
                     }`}>{module.title}</span>
                   </div>
                   <div className="flex items-center gap-1">
+                    <Button
+                      onClick={() => toggleMaximize(moduleId)}
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-cyan/20 transition-all"
+                      title="Maximize/Restore"
+                    >
+                      <Maximize2 className="w-3 h-3" />
+                    </Button>
                     <Button
                       onClick={() => refreshModule(moduleId)}
                       size="icon"
@@ -808,9 +848,9 @@ export const ModularInterface = () => {
         );
       })}
 
-      {/* Enhanced Bottom Dock */}
+      {/* Enhanced Bottom Dock - aut0 style */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-        <div className={`p-3 rounded-lg backdrop-blur-md transition-all duration-300 ${
+        <div className={`p-2 rounded-sm backdrop-blur-md transition-all duration-300 ${
           isLightMode ? 'bg-white/80 border border-gray-300' : 'void-panel'
         }`}>
           <div 
@@ -835,20 +875,20 @@ export const ModularInterface = () => {
               <Button
                 key={module.id}
                 onClick={() => openModule(module.id)}
-                className={`relative group p-3 transition-all duration-300 flex-shrink-0 ${
+                className={`relative group p-2.5 transition-all duration-300 flex-shrink-0 rounded-sm ${
                   isLightMode 
                     ? 'bg-gray-100 hover:bg-gray-200 border border-gray-300' 
-                    : 'bg-black hover:bg-gray-900 border border-gray-700'
+                    : 'bg-surface hover:bg-surface-elevated border border-graphite/30'
                 } ${
                   activeModules.includes(module.id) 
-                    ? 'ring-2 ring-electric-cyan shadow-electric' 
-                    : 'hover:ring-1 hover:ring-electric-cyan/50'
+                    ? 'ring-1 ring-electric-cyan/50' 
+                    : 'hover:border-electric-cyan/30'
                 }`}
                 title={module.title}
                 style={{
                   animationDelay: `${index * 50}ms`,
                   boxShadow: activeModules.includes(module.id) 
-                    ? '0 0 20px rgba(0, 255, 255, 0.3)' 
+                    ? '0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1)' 
                     : ''
                 }}
               >
@@ -903,7 +943,7 @@ export const ModularInterface = () => {
         </div>
       </div>
 
-      {/* Background Effects - Infinite Scroll Grid */}
+      {/* Background Effects - Infinite Scroll Grid (aut0 style - 100px) */}
       <div 
         className="fixed inset-0 pointer-events-none overflow-hidden opacity-10"
         style={{
@@ -912,13 +952,13 @@ export const ModularInterface = () => {
             linear-gradient(${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px),
             linear-gradient(90deg, ${isLightMode ? 'hsl(0 0% 60%)' : 'hsl(var(--steel))'} 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px'
+          backgroundSize: '100px 100px'
         }}
       />
 
-      {/* Floating ambient elements */}
+      {/* Floating ambient elements - reduced for aut0 style */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        {[...Array(8)].map((_, i) => (
+        {[...Array(3)].map((_, i) => (
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float ${
@@ -927,9 +967,9 @@ export const ModularInterface = () => {
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${6 + Math.random() * 4}s`,
-              opacity: 0.6
+              animationDelay: `${i * 1.5}s`,
+              animationDuration: `${8 + Math.random() * 4}s`,
+              opacity: 0.4
             }}
           />
         ))}
