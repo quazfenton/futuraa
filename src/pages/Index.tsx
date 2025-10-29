@@ -13,7 +13,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    // Mouse trail effect
+    // Mouse trail effect - aut0 style
     const handleMouseMove = (e: MouseEvent) => {
       const trail = {
         x: e.clientX,
@@ -21,7 +21,7 @@ const Index = () => {
         id: Date.now() + Math.random()
       };
       
-      setMouseTrails(prev => [...prev.slice(-10), trail]);
+      setMouseTrails(prev => [...prev.slice(-8), trail]);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -31,8 +31,8 @@ const Index = () => {
   useEffect(() => {
     // Cleanup old trails
     const interval = setInterval(() => {
-      setMouseTrails(prev => prev.slice(-5));
-    }, 100);
+      setMouseTrails(prev => prev.slice(-4));
+    }, 150);
     
     return () => clearInterval(interval);
   }, []);
