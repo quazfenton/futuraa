@@ -9,14 +9,28 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean,
+  ),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  optimizeDeps: {
+    include: ["monaco-editor", "tldraw"],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          monaco: ["monaco-editor", "@monaco-editor/react"],
+          tldraw: ["tldraw", "yjs", "y-websocket"],
+          charts: ["recharts"],
+          vendor: ["react", "react-dom", "react-rnd"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
 }));

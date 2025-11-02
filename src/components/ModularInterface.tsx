@@ -40,6 +40,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FluidNavigation } from "@/components/FluidNavigation";
+import { CollaborativeBoard } from "@/components/modules/CollaborativeBoard";
+import { CodeEditorPro } from "@/components/modules/CodeEditorPro";
+import { AnalyticsDashboard } from "@/components/modules/AnalyticsDashboard";
 
 interface ModuleWindow {
   id: string;
@@ -641,6 +644,33 @@ const modules: Record<string, ModuleWindow> = {
     position: { x: 340, y: 280 },
     size: { width: 900, height: 700 },
     subdomain: "chat",
+  },
+  collaborativeBoard: {
+    id: "collaborative-board",
+    title: "Whiteboard",
+    icon: Palette,
+    content: <CollaborativeBoard roomId="default" userId="guest" />,
+    position: { x: 150, y: 100 },
+    size: { width: 900, height: 650 },
+    subdomain: "board",
+  },
+  codeEditorPro: {
+    id: "code-editor-pro",
+    title: "Code Editor Pro",
+    icon: Code,
+    content: <CodeEditorPro />,
+    position: { x: 200, y: 120 },
+    size: { width: 1000, height: 700 },
+    subdomain: "code",
+  },
+  analyticsDashboard: {
+    id: "analytics-dashboard",
+    title: "Analytics",
+    icon: TrendingUp,
+    content: <AnalyticsDashboard />,
+    position: { x: 240, y: 180 },
+    size: { width: 900, height: 600 },
+    subdomain: "analytics",
   },
 };
 
