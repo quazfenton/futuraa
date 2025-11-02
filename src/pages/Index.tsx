@@ -4,37 +4,11 @@ import { KineticText, GlitchText } from '@/components/KineticTypography';
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [mouseTrails, setMouseTrails] = useState<Array<{x: number, y: number, id: number}>>([]);
 
   useEffect(() => {
     // Initialize the interface
     const timer = setTimeout(() => setIsLoaded(true), 500);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Mouse trail effect - aut0 style
-    const handleMouseMove = (e: MouseEvent) => {
-      const trail = {
-        x: e.clientX,
-        y: e.clientY,
-        id: Date.now() + Math.random()
-      };
-      
-      setMouseTrails(prev => [...prev.slice(-8), trail]);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  useEffect(() => {
-    // Cleanup old trails
-    const interval = setInterval(() => {
-      setMouseTrails(prev => prev.slice(-4));
-    }, 150);
-    
-    return () => clearInterval(interval);
   }, []);
 
   if (!isLoaded) {
@@ -91,19 +65,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Mouse Trails */}
-      {mouseTrails.map((trail, index) => (
-        <div
-          key={trail.id}
-          className="particle-trail"
-          style={{
-            left: trail.x,
-            top: trail.y,
-            animationDelay: `${index * 50}ms`
-          }}
-        />
-      ))}
-
       {/* Main Interface */}
       <ModularInterface />
 
