@@ -1004,10 +1004,30 @@ export const ModularInterface = () => {
           showNavigation ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <FluidNavigation
-          onNavigate={openModule}
-          activeSection={lastOpenedModule}
-        />
+        <div className="hidden md:block">
+          <FluidNavigation
+            onNavigate={openModule}
+            activeSection={lastOpenedModule}
+          />
+        </div>
+        {/* Mobile Navigation Menu */}
+        <div className="md:hidden w-64 h-full bg-black/95 border-r border-graphite/50 p-4 overflow-y-auto">
+          <div className="space-y-2">
+            {Object.values(modules).map((module) => (
+              <button
+                key={module.id}
+                onClick={() => {
+                  openModule(module.id);
+                  setShowNavigation(false);
+                }}
+                className="w-full flex items-center gap-3 p-3 rounded hover:bg-electric-cyan/20 transition-colors text-left"
+              >
+                <module.icon className="w-5 h-5 text-electric-cyan" />
+                <span className="text-sm text-chrome">{module.title}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Navigation Toggle Button - Bottom Right */}
@@ -1038,6 +1058,11 @@ export const ModularInterface = () => {
               bringToFront(moduleId);
               setDraggingModule(moduleId);
             }}
+            onDrag={(e, d) => {
+              if (!isMaximized) {
+                updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
+              }
+            }}
             onDragStop={(e, d) => {
               if (!isMaximized) {
                 updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
@@ -1055,9 +1080,17 @@ export const ModularInterface = () => {
             style={{ zIndex }}
             dragHandleClassName="module-drag-handle"
             enableResizing={!isMaximized}
-            bounds="parent"
+            bounds="window"
+            disableDragging={isMaximized}
             minWidth={280}
             minHeight={180}
+            className="touch-none"
+            default={{
+              x: currentPosition.x,
+              y: currentPosition.y,
+              width: currentSize.width,
+              height: currentSize.height
+            }}
           >
             <div
               className={`h-full border rounded-sm transition-all duration-300 ${
@@ -1145,7 +1178,7 @@ export const ModularInterface = () => {
       })}
 
       {/* Enhanced Bottom Dock - aut0 style */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40 hidden md:block">
         <div
           className={`p-2 rounded-sm backdrop-blur-md transition-all duration-300 ${
             isLightMode ? "bg-white/80 border border-gray-300" : "void-panel"
