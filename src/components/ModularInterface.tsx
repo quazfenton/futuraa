@@ -769,7 +769,12 @@ export const ModularInterface = () => {
 
     // Double-click detection (within 300ms)
     if (currentTime - lastClick < 300) {
-      const currentState = modulePositions[moduleId] || modules[moduleId];
+      const currentState = modulePositions[moduleId] || {
+        x: modules[moduleId].position.x,
+        y: modules[moduleId].position.y,
+        width: modules[moduleId].size.width,
+        height: modules[moduleId].size.height
+      };
 
       if (maximizedModule === moduleId) {
         // Restore previous state

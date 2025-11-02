@@ -107,26 +107,6 @@ const Index = () => {
       {/* Main Interface */}
       <ModularInterface />
 
-      {/* Ambient Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-        {/* Floating geometric shapes */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-electric-cyan opacity-60 animate-float" />
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-electric-violet opacity-40 animate-float" 
-             style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-1/3 left-1/2 w-3 h-3 bg-electric-amber opacity-30 animate-rotate-slow" />
-        
-        {/* Grid overlay */}
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `
-              linear-gradient(hsl(var(--steel)) 1px, transparent 1px),
-              linear-gradient(90deg, hsl(var(--steel)) 1px, transparent 1px)
-            `,
-            backgroundSize: '100px 100px'
-          }}
-        />
-      </div>
 
       {/* Performance Monitor */}
       <div className="fixed bottom-4 left-4 z-50">
