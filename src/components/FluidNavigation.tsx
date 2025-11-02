@@ -13,7 +13,14 @@ import {
   Code,
   Database,
   User,
-  Bot
+  Bot,
+  GitBranch,
+  Sparkles,
+  Server,
+  TrendingUp,
+  Cloud,
+  BookOpen,
+  Brain
 } from 'lucide-react';
 
 interface NavItem {
@@ -107,6 +114,66 @@ const navItems: NavItem[] = [
     label: 'GitHub Explorer',
     icon: Code,
     description: 'Browse repos & files'
+  },
+  {
+    id: 'github-advanced',
+    label: 'GitHub Pro',
+    icon: GitBranch,
+    description: 'Advanced repo analysis'
+  },
+  {
+    id: 'hf-spaces-pro',
+    label: 'HF Spaces Pro',
+    icon: Sparkles,
+    description: 'ML models & Gradio'
+  },
+  {
+    id: 'devops',
+    label: 'DevOps Center',
+    icon: Server,
+    description: 'Docker & CI/CD'
+  },
+  {
+    id: 'sandbox',
+    label: 'Code Sandbox',
+    icon: Code,
+    description: 'Multi-language execution'
+  },
+  {
+    id: 'api-pro',
+    label: 'API Playground',
+    icon: Globe,
+    description: 'REST & GraphQL'
+  },
+  {
+    id: 'data-workbench',
+    label: 'Data Workbench',
+    icon: TrendingUp,
+    description: 'CSV analysis & ML'
+  },
+  {
+    id: 'creative',
+    label: 'Creative Studio',
+    icon: Sparkles,
+    description: 'Image & video editing'
+  },
+  {
+    id: 'cloud-pro',
+    label: 'Cloud Storage',
+    icon: Cloud,
+    description: 'Multi-provider files'
+  },
+  {
+    id: 'wiki',
+    label: 'Wiki',
+    icon: BookOpen,
+    description: 'Knowledge base'
+  },
+  {
+    id: 'prompts',
+    label: 'AI Prompts',
+    icon: Brain,
+    description: 'Prompt library'
   }
 ];
 

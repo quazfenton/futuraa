@@ -30,9 +30,16 @@ import {
   Volume2,
   Heart,
   Bot,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { FluidNavigation } from "@/components/FluidNavigation";
+  GitBranch,
+  Sparkles,
+  Server,
+  TrendingUp,
+  Cloud,
+  BookOpen,
+  Brain
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FluidNavigation } from '@/components/FluidNavigation';
 
 interface ModuleWindow {
   id: string;
@@ -448,8 +455,199 @@ const modules: Record<string, ModuleWindow> = {
     ),
     position: { x: 300, y: 180 },
     size: { width: 860, height: 640 },
-    subdomain: "chat",
+    subdomain: 'chat'
   },
+  githubAdvanced: {
+    id: 'github-advanced',
+    title: 'GitHub Pro',
+    icon: GitBranch,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/github-advanced" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="github-advanced"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="GitHub Pro"
+      />
+    ),
+    position: { x: 150, y: 100 },
+    size: { width: 1000, height: 700 },
+    subdomain: 'chat'
+  },
+  hfSpacesPro: {
+    id: 'hf-spaces-pro',
+    title: 'HF Spaces Pro',
+    icon: Sparkles,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/hf-spaces-pro" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="hf-spaces-pro"
+        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="HF Spaces Pro"
+      />
+    ),
+    position: { x: 180, y: 120 },
+    size: { width: 1200, height: 800 },
+    subdomain: 'chat'
+  },
+  devops: {
+    id: 'devops',
+    title: 'DevOps Center',
+    icon: Server,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/devops" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="devops"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="DevOps Center"
+      />
+    ),
+    position: { x: 200, y: 140 },
+    size: { width: 1000, height: 700 },
+    subdomain: 'chat'
+  },
+  sandbox: {
+    id: 'sandbox',
+    title: 'Code Sandbox',
+    icon: Code,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/sandbox" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="sandbox"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Code Sandbox"
+      />
+    ),
+    position: { x: 220, y: 160 },
+    size: { width: 900, height: 650 },
+    subdomain: 'chat'
+  },
+  apiPro: {
+    id: 'api-pro',
+    title: 'API Playground',
+    icon: Globe,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/api-pro" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="api-pro"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="API Playground"
+      />
+    ),
+    position: { x: 240, y: 180 },
+    size: { width: 1000, height: 700 },
+    subdomain: 'chat'
+  },
+  dataWorkbench: {
+    id: 'data-workbench',
+    title: 'Data Workbench',
+    icon: TrendingUp,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/data-workbench" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="data-workbench"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Data Workbench"
+      />
+    ),
+    position: { x: 260, y: 200 },
+    size: { width: 1000, height: 700 },
+    subdomain: 'chat'
+  },
+  creative: {
+    id: 'creative',
+    title: 'Creative Studio',
+    icon: Sparkles,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/creative" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="creative"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Creative Studio"
+      />
+    ),
+    position: { x: 280, y: 220 },
+    size: { width: 900, height: 650 },
+    subdomain: 'chat'
+  },
+  cloudPro: {
+    id: 'cloud-pro',
+    title: 'Cloud Storage',
+    icon: Cloud,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/cloud-pro" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="cloud-pro"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Cloud Storage"
+      />
+    ),
+    position: { x: 300, y: 240 },
+    size: { width: 1000, height: 700 },
+    subdomain: 'chat'
+  },
+  wiki: {
+    id: 'wiki',
+    title: 'Wiki',
+    icon: BookOpen,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/wiki" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="wiki"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="Wiki"
+      />
+    ),
+    position: { x: 320, y: 260 },
+    size: { width: 900, height: 700 },
+    subdomain: 'chat'
+  },
+  prompts: {
+    id: 'prompts',
+    title: 'AI Prompts',
+    icon: Brain,
+    content: (
+      <iframe 
+        src="https://chat.quazfenton.xyz/embed/prompts" 
+        className="w-full h-full border-0 rounded"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        data-module="prompts"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        title="AI Prompts"
+      />
+    ),
+    position: { x: 340, y: 280 },
+    size: { width: 900, height: 700 },
+    subdomain: 'chat'
+  }
 };
 
 export const ModularInterface = () => {
