@@ -1,50 +1,44 @@
+# Build stage: use node to install deps and build the Vite app
 FROM node:20-alpine AS builder
 
-# Set working directory
+# Create app directory
 WORKDIR /app
 
-# Copy package files
+# Install dependencies needed to build
+# Copy package files first to leverage Docker cache
 COPY package*.json ./
-# If you use Bun and have bun.lockb, keep the next line; otherwise remove it
-COPY bun.lockb ./
+COPY pnpm-lock.yaml ./
+# If you use yarn.lock or bun.lockb, rename the file here (remove pnpm lines above)
+# COPY yarn.lock ./
+# COPY bun.lockb ./
 
-# Install all dependencies for build
-RUN npm install -g npm@latest && \
-    npm ci
+# Install dependencies (detect package manager)
+# If you use pnpm, replace with pnpm install --frozen-lockfile
+RUN apk add --no-cache python3 make g++ || true
 
-# Copy source code
+# Use npm ci for reproducible install
+RUN npm ci
+
+# Copy source files and build
 COPY . .
-
-# Build the application (requires "build" script in package.json)
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS production
+# Production stage: serve built static files with nginx
+FROM nginx:stable-alpine AS production
 
-# Set working directory
-WORKDIR /app
+# Remove default nginx website
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy package files from builder
-COPY package*.json ./
-# If you use Bun and have bun.lockb, keep the next line; otherwise remove it
-COPY bun.lockb ./
+# Copy built files from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Install only production dependencies (node v20+ supports --omit=dev)
-RUN npm install -g npm@latest && \
-    npm ci --omit=dev
+# Configure nginx to listen on $PORT for Cloud Run (default 8080)
+# Replace the default conf with one that reads PORT env var
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built assets and production server from builder stage
-COPY --from=builder /app/dist ./dist
-# copy server entry from builder to preserve built files or transpiled server file
-COPY --from=builder /app/server.js ./server.js
-
-# Ensure the process runs as non-root where possible (optional)
-# create app user and set ownership (commented out if incompatible with runtime)
-# RUN addgroup -S app && adduser -S app -G app && chown -R app:app /app
-# USER app
-
-# Expose port for Cloud Run (Cloud Run listens on $PORT but default is 8080)
+# Expose port 8080
 EXPOSE 8080
 
-# Start the server
-CMD ["node", "server.js"]
+# Run nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]
