@@ -26,153 +26,135 @@ import {
 interface NavItem {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ReactNode;
   description: string;
 }
 
 const navItems: NavItem[] = [
   {
     id: 'canvas',
-    label: 'Digital Canvas',
-    icon: Palette,
-    description: 'Interactive design workspace'
+    label: 'CANVAS',
+    icon: <Palette className="w-5 h-5" />,
+    description: 'Interactive Design Canvas'
   },
   {
     id: 'gallery',
-    label: 'Visual Gallery',
-    icon: Image,
-    description: 'Image collection & viewer'
+    label: 'GALLERY',
+    icon: <Image className="w-5 h-5" />,
+    description: 'Visual Gallery'
   },
   {
     id: 'journal',
-    label: 'Digital Journal',
-    icon: FileText,
-    description: 'Written content & blog'
+    label: 'JOURNAL',
+    icon: <FileText className="w-5 h-5" />,
+    description: 'Digital Journal'
   },
   {
     id: 'music',
-    label: 'Sonic Interface',
-    icon: Music,
-    description: 'Audio playlist & controls'
+    label: 'MUSIC',
+    icon: <Music className="w-5 h-5" />,
+    description: 'Sonic Interface'
   },
   {
     id: 'video',
-    label: 'Motion Archive',
-    icon: Video,
-    description: 'Video content player'
-  },
-  {
-    id: 'portfolio',
-    label: 'Portfolio Hub',
-    icon: Globe,
-    description: 'Main portfolio interface'
-  },
-  {
-    id: 'neural',
-    label: 'Neural Network',
-    icon: Cpu,
-    description: 'AI processing hub'
-  },
-  {
-    id: 'code',
-    label: 'Code Studio',
-    icon: Code,
-    description: 'Development environment'
+    label: 'VIDEO',
+    icon: <Video className="w-5 h-5" />,
+    description: 'Motion Graphics'
   },
   {
     id: 'data',
-    label: 'Data Vault',
-    icon: Database,
-    description: 'Information repository'
+    label: 'DATA',
+    icon: <Database className="w-5 h-5" />,
+    description: 'Data Vault'
   },
   {
     id: 'chat',
-    label: 'LLM Chat',
-    icon: Bot,
+    label: 'LLM CHAT',
+    icon: <Bot className="w-5 h-5" />,
     description: 'chat.quazfenton.xyz'
   },
   {
     id: 'notes',
-    label: 'Notes',
-    icon: FileText,
+    label: 'NOTES',
+    icon: <FileText className="w-5 h-5" />,
     description: 'Rich Markdown notes'
   },
   {
     id: 'hfspaces',
-    label: 'HF Spaces',
-    icon: Image,
+    label: 'HF SPACES',
+    icon: <Image className="w-5 h-5" />,
     description: 'Hugging Face models & demos'
   },
   {
     id: 'network',
-    label: 'Network Builder',
-    icon: Globe,
+    label: 'NETWORK',
+    icon: <Globe className="w-5 h-5" />,
     description: 'HTTP requests & presets'
   },
   {
     id: 'github',
-    label: 'GitHub Explorer',
-    icon: Code,
+    label: 'GITHUB',
+    icon: <Code className="w-5 h-5" />,
     description: 'Browse repos & files'
   },
   {
     id: 'github-advanced',
-    label: 'GitHub Pro',
-    icon: GitBranch,
+    label: 'GITHUB PRO',
+    icon: <GitBranch className="w-5 h-5" />,
     description: 'Advanced repo analysis'
   },
   {
     id: 'hf-spaces-pro',
-    label: 'HF Spaces Pro',
-    icon: Sparkles,
+    label: 'HF SPACES PRO',
+    icon: <Sparkles className="w-5 h-5" />,
     description: 'ML models & Gradio'
   },
   {
     id: 'devops',
-    label: 'DevOps Center',
-    icon: Server,
+    label: 'DEVOPS',
+    icon: <Server className="w-5 h-5" />,
     description: 'Docker & CI/CD'
   },
   {
     id: 'sandbox',
-    label: 'Code Sandbox',
-    icon: Code,
+    label: 'CODE SANDBOX',
+    icon: <Code className="w-5 h-5" />,
     description: 'Multi-language execution'
   },
   {
     id: 'api-pro',
-    label: 'API Playground',
-    icon: Globe,
+    label: 'API PLAYGROUND',
+    icon: <Globe className="w-5 h-5" />,
     description: 'REST & GraphQL'
   },
   {
     id: 'data-workbench',
-    label: 'Data Workbench',
-    icon: TrendingUp,
+    label: 'DATA WORKBENCH',
+    icon: <TrendingUp className="w-5 h-5" />,
     description: 'CSV analysis & ML'
   },
   {
     id: 'creative',
-    label: 'Creative Studio',
-    icon: Sparkles,
+    label: 'CREATIVE',
+    icon: <Sparkles className="w-5 h-5" />,
     description: 'Image & video editing'
   },
   {
     id: 'cloud-pro',
-    label: 'Cloud Storage',
-    icon: Cloud,
+    label: 'CLOUD STORAGE',
+    icon: <Cloud className="w-5 h-5" />,
     description: 'Multi-provider files'
   },
   {
     id: 'wiki',
-    label: 'Wiki',
-    icon: BookOpen,
+    label: 'WIKI',
+    icon: <BookOpen className="w-5 h-5" />,
     description: 'Knowledge base'
   },
   {
     id: 'prompts',
-    label: 'AI Prompts',
-    icon: Brain,
+    label: 'AI PROMPTS',
+    icon: <Brain className="w-5 h-5" />,
     description: 'Prompt library'
   }
 ];
@@ -186,190 +168,180 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showStatus, setShowStatus] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const navRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateCursor = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
+    document.addEventListener('mousemove', updateCursor);
+    return () => document.removeEventListener('mousemove', updateCursor);
+  }, []);
+
+  useEffect(() => {
+    if (cursorRef.current) {
+      cursorRef.current.style.transform = `translate3d(${cursorPos.x - 6}px, ${cursorPos.y - 6}px, 0)`;
+    }
+  }, [cursorPos]);
 
   const handleItemClick = (itemId: string) => {
     onNavigate?.(itemId);
-    setIsExpanded(false);
   };
+
+  if (!isVisible) return null;
 
   return (
     <>
-      {/* Custom Cursor */}
-      <div 
-        className="fixed w-6 h-6 pointer-events-none z-50 transition-all duration-200"
+      {/* Custom Cursor Trail */}
+      <div
+        ref={cursorRef}
+        className="fixed w-3 h-3 pointer-events-none transition-all duration-200 ease-out z-50"
         style={{
-          left: cursorPos.x - 12,
-          top: cursorPos.y - 12,
-          background: hoveredItem ? 'var(--gradient-electric)' : 'transparent',
-          borderRadius: '50%',
-          opacity: hoveredItem ? 0.6 : 0,
+          background: hoveredItem ? 'var(--gradient-electric)' : 'var(--gradient-chrome)',
+          borderRadius: hoveredItem ? '50%' : '2px',
           transform: `scale(${hoveredItem ? 1.5 : 1})`,
+          opacity: hoveredItem ? 0.8 : 0.6,
         }}
       />
 
-      {/* Floating Navigation Panel - Left Side */}
-      <div
-        className={`fixed top-1/2 left-8 transform -translate-y-1/2 transition-all duration-500 ${
-          isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-        } z-40`}
+      {/* Left Sidebar Navigation */}
+      <nav
+        ref={navRef}
+        className={`fixed top-8 left-8 z-40 transition-all duration-500 ease-spring-smooth ${
+          isExpanded ? 'w-80' : 'w-16'
+        }`}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => {
           setIsExpanded(false);
           setHoveredItem(null);
         }}
       >
-        {isExpanded && (
-          <nav className="void-panel p-6 rounded-lg backdrop-blur-md min-w-[320px] max-w-[380px] max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="mb-6">
-              <div className="text-sm font-mono text-steel mb-2 tracking-wider">
-                MODULE NAVIGATION
+        <div className="void-panel rounded-sm backdrop-blur-sm overflow-hidden">
+          {/* Header */}
+          <div className="p-4 border-b border-graphite/20">
+            <div className="flex items-center justify-between">
+              <div className={`transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+                <h3 className="font-mono text-sm font-semibold text-chrome">FUTURAA</h3>
+                <p className="text-xs text-steel mt-1">Digital Workspace</p>
               </div>
-              <div className="text-xs text-titanium">
-                Digital Interface Hub
-              </div>
+              <ChevronRight 
+                className={`w-4 h-4 text-steel transition-transform duration-300 ${
+                  isExpanded ? 'rotate-90' : 'rotate-0'
+                }`}
+              />
             </div>
-            
-            {/* Navigation Items */}
-            <div className="space-y-2 mb-6">
-              {navItems.map((item, index) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleItemClick(item.id)}
-                  onMouseEnter={(e) => {
-                    setHoveredItem(item.id);
-                    setCursorPos({ x: e.clientX, y: e.clientY });
-                  }}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
-                  className={`w-full group flex items-center gap-3 p-3 rounded transition-all duration-300 text-left interactive-element ${
-                    activeSection === item.id 
-                      ? 'electric-glow text-foreground' 
-                      : 'hover:bg-surface-elevated text-steel hover:text-chrome'
-                  }`}
-                  style={{ transitionDelay: `${index * 30}ms` }}
-                >
-                  <div className={`flex-shrink-0 transition-all duration-300 ${
-                    hoveredItem === item.id ? 'scale-110 rotate-12' : ''
-                  } ${activeSection === item.id ? 'text-foreground' : 'text-steel'}`}>
-                    <item.icon className="w-4 h-4" />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className={`font-mono text-sm font-medium ${
-                      activeSection === item.id ? 'text-foreground' : 'text-chrome'
-                    }`}>
-                      {item.label}
-                    </div>
-                    <div className={`text-xs transition-colors duration-300 ${
-                      hoveredItem === item.id ? 'text-electric-cyan' : 'text-steel'
-                    }`}>
-                      {item.description}
-                    </div>
-                  </div>
-                  
-                  <div className={`transition-transform duration-300 ${
-                    hoveredItem === item.id ? 'translate-x-1' : ''
-                  }`}>
-                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
-                  </div>
+          </div>
 
+          {/* Navigation Items - Scrollable */}
+          <div className="p-2 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-graphite/50 scrollbar-track-transparent">
+            {navItems.map((item, index) => (
+              <div
+                key={item.id}
+                className={`relative mb-2 last:mb-0 transition-all duration-300 ${
+                  isExpanded ? 'opacity-100' : 'opacity-80'
+                }`}
+                style={{ transitionDelay: `${index * 30}ms` }}
+              >
+                <button
+                  className={`w-full text-left p-3 rounded-sm transition-all duration-300 ease-spring-smooth
+                    interactive-element group relative overflow-hidden ${
+                    activeSection === item.id 
+                      ? 'electric-glow text-foreground bg-surface-elevated' 
+                      : 'hover:bg-surface-elevated text-chrome'
+                  }`}
+                  onClick={() => handleItemClick(item.id)}
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
+                  {/* Background animation */}
+                  <div 
+                    className={`absolute inset-0 transition-all duration-300 ${
+                      hoveredItem === item.id 
+                        ? 'bg-gradient-electric opacity-10' 
+                        : 'bg-transparent'
+                    }`}
+                  />
+                  
+                  <div className="relative flex items-center space-x-3">
+                    <div className={`transition-all duration-300 ${
+                      activeSection === item.id ? 'text-electric-cyan' : 'text-steel'
+                    }`}>
+                      {item.icon}
+                    </div>
+                    
+                    <div className={`transition-all duration-300 ${
+                      isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+                    }`}>
+                      <div className={`font-mono text-xs font-medium ${
+                        activeSection === item.id ? 'text-electric-cyan' : 'text-chrome'
+                      }`}>
+                        {item.label}
+                      </div>
+                      <div className={`text-xs mt-0.5 transition-colors duration-300 ${
+                        hoveredItem === item.id ? 'text-electric-cyan' : 'text-steel'
+                      }`}>
+                        {item.description}
+                      </div>
+                    </div>
+                  </div>
+                  
                   {/* Active indicator */}
-                  <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-r transition-all duration-300 ${
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 ${
                     activeSection === item.id 
                       ? 'bg-gradient-electric opacity-100' 
                       : 'bg-transparent opacity-0'
                   }`} />
                 </button>
-              ))}
-            </div>
-
-            {/* Creator Info Section */}
-            {showStatus && (
-              <div className="border-t border-graphite/30 pt-4 animate-fade-in">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-gradient-electric rounded-sm flex items-center justify-center">
-                      <User className="w-3 h-3 text-background" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-mono text-chrome">Creator Info</div>
-                      <div className="text-xs text-steel">Quaz Fenton</div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowStatus(false)}
-                    className="text-steel hover:text-chrome transition-colors p-1"
-                  >
-                    <ChevronRight className="w-3 h-3 rotate-90" />
-                  </button>
-                </div>
-                
-                {/* Social Links */}
-                <div className="space-y-2">
-                  <a 
-                    href="https://github.com/quazfenton" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
-                  >
-                    <Code className="w-3 h-3" />
-                    <span className="font-mono">GitHub</span>
-                  </a>
-                  <a 
-                    href="https://twitter.com/quazfenton" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
-                  >
-                    <Globe className="w-3 h-3" />
-                    <span className="font-mono">Twitter</span>
-                  </a>
-                  <a 
-                    href="https://quazfenton.xyz" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs text-steel hover:text-electric-cyan transition-colors p-2 rounded hover:bg-surface-elevated"
-                  >
-                    <Globe className="w-3 h-3" />
-                    <span className="font-mono">Portfolio</span>
-                  </a>
-                </div>
               </div>
-            )}
+            ))}
+          </div>
 
-            {/* Show Status Button when hidden */}
-            {!showStatus && (
-              <div className="border-t border-graphite/30 pt-3">
-                <button
-                  onClick={() => setShowStatus(true)}
-                  className="w-full text-left p-2 rounded hover:bg-surface-elevated transition-colors group"
+          {/* Footer - Creator Info */}
+          <div className={`p-4 border-t border-graphite/20 transition-all duration-300 ${
+            isExpanded ? 'opacity-100' : 'opacity-0'
+          }`}>
+            <div className="text-xs text-steel font-mono space-y-2">
+              <div>
+                <div className="text-chrome font-medium mb-1">CREATOR</div>
+                <a 
+                  href="https://github.com/quazfenton" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-steel hover:text-electric-cyan transition-colors duration-200 flex items-center gap-1"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-electric rounded-sm flex items-center justify-center">
-                      <User className="w-2 h-2 text-background" />
-                    </div>
-                    <span className="text-xs font-mono text-steel group-hover:text-chrome">Show Status</span>
-                    <ChevronRight className="w-3 h-3 text-steel -rotate-90" />
-                  </div>
-                </button>
+                  <span>GitHub</span>
+                  <span className="text-xs">↗</span>
+                </a>
+                <a 
+                  href="https://twitter.com/quazfenton" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-steel hover:text-electric-cyan transition-colors duration-200 flex items-center gap-1 mt-1"
+                >
+                  <span>Twitter</span>
+                  <span className="text-xs">↗</span>
+                </a>
               </div>
-            )}
-          </nav>
-        )}
-      </div>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      {/* Floating Action Button */}
+      {/* Toggle Button - Bottom Right (Black) */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={`fixed bottom-8 right-8 w-12 h-12 electric-glow rounded-sm interactive-element flex items-center justify-center z-40 backdrop-blur-sm transition-all duration-300 ${
-          isExpanded ? 'rotate-45' : 'rotate-0'
-        }`}
-        onMouseEnter={() => setHoveredItem('fab')}
+        className="fixed bottom-8 right-8 w-12 h-12 bg-black border border-white/20 rounded-full 
+                   hover:border-electric-cyan transition-all duration-300 flex items-center justify-center z-40
+                   backdrop-blur-sm hover:shadow-electric"
+        onMouseEnter={() => setHoveredItem('toggle')}
         onMouseLeave={() => setHoveredItem(null)}
+        onClick={() => setIsVisible(!isVisible)}
       >
-        <Zap className="w-5 h-5 text-foreground" />
+        <ChevronRight className={`w-5 h-5 text-steel transition-transform duration-300 ${
+          isVisible ? 'rotate-180' : 'rotate-0'
+        }`} />
       </button>
     </>
   );
