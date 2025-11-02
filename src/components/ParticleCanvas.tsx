@@ -177,7 +177,7 @@ export const ParticleCanvas = () => {
 
       // Generate particles on interaction
       if (isInteracting) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 1; i++) {
           const offsetX = (Math.random() - 0.5) * 20;
           const offsetY = (Math.random() - 0.5) * 20;
           particlesRef.current.push(
@@ -200,9 +200,9 @@ export const ParticleCanvas = () => {
       const y = e.clientY - rect.top;
 
       // Create burst of particles
-      for (let i = 0; i < 15; i++) {
-        const angle = (i / 15) * Math.PI * 2;
-        const speed = Math.random() * 5 + 2;
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const speed = Math.random() * 3 + 1;
         const particle = createParticle(x, y, "electric");
         particle.vx = Math.cos(angle) * speed;
         particle.vy = Math.sin(angle) * speed;
@@ -233,14 +233,14 @@ export const ParticleCanvas = () => {
 
     // Auto-generate ambient particles
     const ambientInterval = setInterval(() => {
-      if (particlesRef.current.length < 100) {
+      if (particlesRef.current.length < 30) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
         particlesRef.current.push(
           createParticle(x, y, Math.random() > 0.7 ? "chrome" : "void")
         );
       }
-    }, 500);
+    }, 1200);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
