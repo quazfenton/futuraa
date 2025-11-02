@@ -1,44 +1,43 @@
-# Build stage: use node to install deps and build the Vite app
+# Use Node.js LTS as the base image
 FROM node:20-alpine AS builder
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Install dependencies needed to build
-# Copy package files first to leverage Docker cache
+# Copy package files
 COPY package*.json ./
-COPY pnpm-lock.yaml ./
-# If you use yarn.lock or bun.lockb, rename the file here (remove pnpm lines above)
-# COPY yarn.lock ./
-# COPY bun.lockb ./
+COPY bun.lockb ./
 
-# Install dependencies (detect package manager)
-# If you use pnpm, replace with pnpm install --frozen-lockfile
-RUN apk add --no-cache python3 make g++ || true
-
-# Use npm ci for reproducible install
+# Install all dependencies for build
+RUN npm install -g npm@latest
 RUN npm ci
 
-# Copy source files and build
+# Copy source code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# Production stage: serve built static files with nginx
-FROM nginx:stable-alpine AS production
+# Production stage
+FROM node:20-alpine AS production
 
-# Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# Set working directory
+WORKDIR /app
 
-# Copy built files from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy package files from builder
+COPY package*.json ./
+COPY bun.lockb ./
 
-# Configure nginx to listen on $PORT for Cloud Run (default 8080)
-# Replace the default conf with one that reads PORT env var
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install only production dependencies
+RUN npm install -g npm@latest
+RUN npm ci --only=production
 
-# Expose port 8080
+# Copy built assets and server file from builder stage
+COPY --from=builder /app/dist ./dist
+COPY server.js .
+
+# Expose port for Cloud Run
 EXPOSE 8080
 
-# Run nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Start the server
+CMD ["node", "server.js"]
