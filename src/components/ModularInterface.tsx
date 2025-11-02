@@ -1034,6 +1034,11 @@ export const ModularInterface = () => {
               isMaximized ? { width: "100vw", height: "100vh" } : currentSize
             }
             position={isMaximized ? { x: 0, y: 0 } : currentPosition}
+            onDrag={(e, d) => {
+              if (!isMaximized) {
+                updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
+              }
+            }}
             onDragStart={() => {
               bringToFront(moduleId);
               setDraggingModule(moduleId);
