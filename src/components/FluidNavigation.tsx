@@ -219,16 +219,16 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
           setHoveredItem(null);
         }}
       >
-        <div className="void-panel rounded-sm backdrop-blur-sm overflow-hidden bg-background border-border">
+        <div className="void-panel rounded-sm backdrop-blur-sm overflow-hidden">
           {/* Header */}
-          <div className="p-4 border-b border-border">
+          <div className="p-4 border-b border-graphite/20">
             <div className="flex items-center justify-between">
               <div className={`transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
-                <h3 className="font-mono text-sm font-semibold text-foreground">FUTURAA</h3>
-                <p className="text-xs text-muted-foreground mt-1">Digital Workspace</p>
+                <h3 className="font-mono text-sm font-semibold text-chrome">FUTURAA</h3>
+                <p className="text-xs text-steel mt-1">Digital Workspace</p>
               </div>
               <ChevronRight 
-                className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${
+                className={`w-4 h-4 text-steel transition-transform duration-300 ${
                   isExpanded ? 'rotate-90' : 'rotate-0'
                 }`}
               />
@@ -249,8 +249,8 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                   className={`w-full text-left p-3 rounded-sm transition-all duration-300 ease-spring-smooth
                     interactive-element group relative overflow-hidden ${
                     activeSection === item.id 
-                      ? 'electric-glow text-foreground bg-accent' 
-                      : 'hover:bg-accent/50 text-foreground'
+                      ? 'electric-glow text-foreground bg-surface-elevated' 
+                      : 'hover:bg-surface-elevated text-chrome'
                   }`}
                   onClick={() => handleItemClick(item.id)}
                   onMouseEnter={() => setHoveredItem(item.id)}
@@ -267,7 +267,7 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                   
                   <div className="relative flex items-center space-x-3">
                     <div className={`transition-all duration-300 ${
-                      activeSection === item.id ? 'text-primary' : 'text-muted-foreground'
+                      activeSection === item.id ? 'text-electric-cyan' : 'text-steel'
                     }`}>
                       {item.icon}
                     </div>
@@ -276,12 +276,12 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                       isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
                     }`}>
                       <div className={`font-mono text-xs font-medium ${
-                        activeSection === item.id ? 'text-primary' : 'text-foreground'
+                        activeSection === item.id ? 'text-electric-cyan' : 'text-chrome'
                       }`}>
                         {item.label}
                       </div>
                       <div className={`text-xs mt-0.5 transition-colors duration-300 ${
-                        hoveredItem === item.id ? 'text-primary' : 'text-muted-foreground'
+                        hoveredItem === item.id ? 'text-electric-cyan' : 'text-steel'
                       }`}>
                         {item.description}
                       </div>
@@ -300,17 +300,17 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
           </div>
 
           {/* Footer - Creator Info */}
-          <div className={`p-4 border-t border-border transition-all duration-300 ${
+          <div className={`p-4 border-t border-graphite/20 transition-all duration-300 ${
             isExpanded ? 'opacity-100' : 'opacity-0'
           }`}>
-            <div className="text-xs text-muted-foreground font-mono space-y-2">
+            <div className="text-xs text-steel font-mono space-y-2">
               <div>
-                <div className="text-foreground font-medium mb-1">CREATOR</div>
+                <div className="text-chrome font-medium mb-1">CREATOR</div>
                 <a 
                   href="https://github.com/quazfenton" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
+                  className="text-steel hover:text-electric-cyan transition-colors duration-200 flex items-center gap-1"
                 >
                   <span>GitHub</span>
                   <span className="text-xs">↗</span>
@@ -319,7 +319,7 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
                   href="https://twitter.com/quazfenton" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1 mt-1"
+                  className="text-steel hover:text-electric-cyan transition-colors duration-200 flex items-center gap-1 mt-1"
                 >
                   <span>Twitter</span>
                   <span className="text-xs">↗</span>
@@ -330,16 +330,16 @@ export const FluidNavigation = ({ onNavigate, activeSection }: FluidNavigationPr
         </div>
       </nav>
 
-      {/* Toggle Button - Bottom Right */}
+      {/* Toggle Button - Bottom Right (Black) */}
       <button
-        className="fixed bottom-8 right-8 w-12 h-12 bg-background border border-border rounded-full 
-                   hover:border-primary transition-all duration-300 flex items-center justify-center z-40
-                   backdrop-blur-sm hover:shadow-lg"
+        className="fixed bottom-8 right-8 w-12 h-12 bg-black border border-white/20 rounded-full 
+                   hover:border-electric-cyan transition-all duration-300 flex items-center justify-center z-40
+                   backdrop-blur-sm hover:shadow-electric"
         onMouseEnter={() => setHoveredItem('toggle')}
         onMouseLeave={() => setHoveredItem(null)}
         onClick={() => setIsVisible(!isVisible)}
       >
-        <ChevronRight className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
+        <ChevronRight className={`w-5 h-5 text-steel transition-transform duration-300 ${
           isVisible ? 'rotate-180' : 'rotate-0'
         }`} />
       </button>
