@@ -11,6 +11,21 @@ const isProduction = process.env.NODE_ENV === 'production' || !process.env.VITE_
 async function createApp() {
   const app = express();
 
+  // Add Content Security Policy headers
+  app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', 
+      "default-src 'self'; " +
+      "frame-src 'self' https://chat.quazfenton.xyz https://*.github.com https://*.huggingface.co https://quazfenton.github.io; " +
+      "script-src 'self' 'unsafe-inline' https://*.googleapis.com; " +
+      "style-src 'self' 'unsafe-inline' https://*.googleapis.com; " +
+      "img-src 'self' data: https:; " +
+      "font-src 'self' https:; " +
+      "connect-src 'self' https://api.github.com https://huggingface.co; " +
+      "frame-ancestors 'none';" // Prevent clickjacking
+    );
+    next();
+  });
+
   if (!isProduction) {
     // In development: use Vite's middleware
     // Use dynamic import to avoid module resolution in production

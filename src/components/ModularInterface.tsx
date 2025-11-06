@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Rnd } from "react-rnd";
 import {
   Maximize2,
   Minimize2,
@@ -43,6 +42,10 @@ import { FluidNavigation } from "@/components/FluidNavigation";
 import { CollaborativeBoard } from "@/components/modules/CollaborativeBoard";
 import { CodeEditorPro } from "@/components/modules/CodeEditorPro";
 import { AnalyticsDashboard } from "@/components/modules/AnalyticsDashboard";
+import { useModuleStore } from "@/store";
+import ModuleWindow from "@/components/ModuleWindow";
+import SecureIframe from "@/components/ui/SecureIframe";
+import { iframeCommunicator } from "@/services/secureCommunication";
 
 interface ModuleWindow {
   id: string;
@@ -361,15 +364,11 @@ const modules: Record<string, ModuleWindow> = {
         <div className="flex-none p-2 text-xs text-steel">
           Embedded from chat.quazfenton.xyz
         </div>
-        <iframe
+        <SecureIframe
           src="https://chat.quazfenton.xyz?embed=1"
           className="flex-1 w-full h-full border-0 rounded"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          data-module="chat"
-          allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           title="AI"
+          allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
         />
       </div>
     ),
@@ -382,13 +381,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Notes",
     icon: FileText,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/notes"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="notes"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Notes Mini-App"
       />
     ),
@@ -401,15 +396,11 @@ const modules: Record<string, ModuleWindow> = {
     title: "HF Spaces",
     icon: Image,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/hf-spaces"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="hfspaces"
-        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Hugging Face Spaces"
+        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
       />
     ),
     position: { x: 240, y: 120 },
@@ -421,13 +412,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Network Builder",
     icon: Globe,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/network"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="network"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Network Request Builder"
       />
     ),
@@ -440,13 +427,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "GitHub Explorer",
     icon: Code,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/github"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="github"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="GitHub Explorer"
       />
     ),
@@ -459,13 +442,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "GitHub Pro",
     icon: GitBranch,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/github-advanced"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="github-advanced"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="GitHub Pro"
       />
     ),
@@ -478,15 +457,11 @@ const modules: Record<string, ModuleWindow> = {
     title: "HF Spaces Pro",
     icon: Sparkles,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/hf-spaces-pro"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="hf-spaces-pro"
-        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="HF Spaces Pro"
+        allow="clipboard-read; clipboard-write; microphone; camera; autoplay; encrypted-media"
       />
     ),
     position: { x: 180, y: 120 },
@@ -498,13 +473,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "DevOps Center",
     icon: Server,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/devops"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="devops"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="DevOps Center"
       />
     ),
@@ -517,13 +488,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Code Sandbox",
     icon: Code,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/sandbox"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="sandbox"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Code Sandbox"
       />
     ),
@@ -536,13 +503,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "API Playground",
     icon: Globe,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/api-pro"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="api-pro"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="API Playground"
       />
     ),
@@ -555,13 +518,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Data Workbench",
     icon: TrendingUp,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/data-workbench"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="data-workbench"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Data Workbench"
       />
     ),
@@ -574,13 +533,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Studio",
     icon: Sparkles,
     content: (
-      <iframe
+      <SecureIframe
         src="https://quazfenton.github.io/gridw0rld/"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="creative"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Creative Studio"
       />
     ),
@@ -593,13 +548,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Cloud Storage",
     icon: Cloud,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/cloud-pro"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="cloud-pro"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Cloud Storage"
       />
     ),
@@ -612,13 +563,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "Wiki",
     icon: BookOpen,
     content: (
-      <iframe
+      <SecureIframe
         src="https://chat.quazfenton.xyz/embed/wiki"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="wiki"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="Wiki"
       />
     ),
@@ -631,13 +578,9 @@ const modules: Record<string, ModuleWindow> = {
     title: "grid",
     icon: Brain,
     content: (
-      <iframe
+      <SecureIframe
         src="https://quazfenton.github.io/gridw0rld/"
         className="w-full h-full border-0 rounded"
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        data-module="prompts"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         title="w0rld"
       />
     ),
@@ -675,22 +618,25 @@ const modules: Record<string, ModuleWindow> = {
 };
 
 export const ModularInterface = () => {
-  const [activeModules, setActiveModules] = useState<string[]>([]);
-  const [maximizedModule, setMaximizedModule] = useState<string | null>(null);
+  const {
+    activeModules,
+    maximizedModule,
+    modulePositions,
+    moduleSizes,
+    moduleZIndexes,
+    previousStates,
+    addModule,
+    removeModule,
+    updatePosition,
+    updateSize,
+    bringToFront,
+    toggleMaximize: toggleMaximizeStore,
+    setModuleZIndex
+  } = useModuleStore();
+  
   const [showNavigation, setShowNavigation] = useState(true);
   const [lastOpenedModule, setLastOpenedModule] = useState<string | null>(null);
-  const [modulePositions, setModulePositions] = useState<
-    Record<string, { x: number; y: number; width: number; height: number }>
-  >({});
-  const [moduleZIndexes, setModuleZIndexes] = useState<Record<string, number>>(
-    {},
-  );
-  const [lastClickTime, setLastClickTime] = useState<Record<string, number>>(
-    {},
-  );
-  const [previousStates, setPreviousStates] = useState<
-    Record<string, { x: number; y: number; width: number; height: number }>
-  >({});
+  const [lastClickTime, setLastClickTime] = useState<Record<string, number>>({});
   const [isLightMode, setIsLightMode] = useState(false);
   const [showInfoBox, setShowInfoBox] = useState(true);
   const [infoText, setInfoText] = useState("DIGITAL WORKSPACE INITIALIZED");
@@ -703,7 +649,6 @@ export const ModularInterface = () => {
   const [backgroundOffset, setBackgroundOffset] = useState({ x: 0, y: 0 });
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
-  const maxZIndex = useRef(100);
   const [draggingModule, setDraggingModule] = useState<string | null>(null);
 
   const user: User = {
@@ -742,7 +687,8 @@ export const ModularInterface = () => {
       ) as NodeListOf<HTMLIFrameElement>;
       iframes.forEach((frame) => {
         try {
-          frame.contentWindow?.postMessage(
+          iframeCommunicator.sendMessage(
+            frame,
             { type: "bing:auth", token },
             "https://chat.quazfenton.xyz",
           );
@@ -758,19 +704,9 @@ export const ModularInterface = () => {
       const randomPos = generateRandomPosition();
       const module = modules[moduleId];
 
-      // Set random position if not already set
-      if (!modulePositions[moduleId]) {
-        setModulePositions((prev) => ({
-          ...prev,
-          [moduleId]: { ...randomPos, ...module.size },
-        }));
-      }
-
-      // Bring to front
-      maxZIndex.current += 1;
-      setModuleZIndexes((prev) => ({ ...prev, [moduleId]: maxZIndex.current }));
-
-      setActiveModules((prev) => [...prev, moduleId]);
+      // Add module to store with position and size
+      addModule(moduleId, randomPos, module.size);
+      bringToFront(moduleId);
       setLastOpenedModule(moduleId);
       setInfoText(`OPENING ${module.title.toUpperCase()}`);
     } else {
@@ -780,10 +716,7 @@ export const ModularInterface = () => {
   };
 
   const closeModule = (moduleId: string) => {
-    setActiveModules((prev) => prev.filter((id) => id !== moduleId));
-    if (maximizedModule === moduleId) {
-      setMaximizedModule(null);
-    }
+    removeModule(moduleId);
     setInfoText(`CLOSED ${modules[moduleId].title.toUpperCase()}`);
   };
 
@@ -793,25 +726,10 @@ export const ModularInterface = () => {
 
     // Double-click detection (within 300ms)
     if (currentTime - lastClick < 300) {
-      const currentState = modulePositions[moduleId] || {
-        x: modules[moduleId].position.x,
-        y: modules[moduleId].position.y,
-        width: modules[moduleId].size.width,
-        height: modules[moduleId].size.height,
-      };
-
+      toggleMaximizeStore(moduleId);
       if (maximizedModule === moduleId) {
-        // Restore previous state
-        const prevState = previousStates[moduleId];
-        if (prevState) {
-          setModulePositions((prev) => ({ ...prev, [moduleId]: prevState }));
-        }
-        setMaximizedModule(null);
         setInfoText(`RESTORED ${modules[moduleId].title.toUpperCase()}`);
       } else {
-        // Save current state before maximizing
-        setPreviousStates((prev) => ({ ...prev, [moduleId]: currentState }));
-        setMaximizedModule(moduleId);
         setInfoText(`MAXIMIZED ${modules[moduleId].title.toUpperCase()}`);
       }
     }
@@ -844,15 +762,12 @@ export const ModularInterface = () => {
     position: { x: number; y: number },
     size: { width: number; height: number },
   ) => {
-    setModulePositions((prev) => ({
-      ...prev,
-      [moduleId]: { ...position, ...size },
-    }));
+    updatePosition(moduleId, { x: position.x, y: position.y });
+    updateSize(moduleId, { width: size.width, height: size.height });
   };
 
   const bringToFront = (moduleId: string) => {
-    maxZIndex.current += 1;
-    setModuleZIndexes((prev) => ({ ...prev, [moduleId]: maxZIndex.current }));
+    bringToFront(moduleId);
   };
 
   // Background dragging
@@ -1047,124 +962,18 @@ export const ModularInterface = () => {
       {activeModules.map((moduleId) => {
         const module = modules[moduleId];
         const isMaximized = maximizedModule === moduleId;
-        const currentPosition = modulePositions[moduleId] || module.position;
-        const currentSize = modulePositions[moduleId] || module.size;
         const zIndex = moduleZIndexes[moduleId] || 20;
 
         return (
-          <Rnd
+          <ModuleWindow
             key={moduleId}
-            size={
-              isMaximized ? { width: "100vw", height: "100vh" } : currentSize
-            }
-            position={isMaximized ? { x: 0, y: 0 } : currentPosition}
-            onDragStart={() => {
-              bringToFront(moduleId);
-              setDraggingModule(moduleId);
-            }}
-            onDragStop={(e, d) => {
-              if (!isMaximized) {
-                updateModulePosition(moduleId, { x: d.x, y: d.y }, currentSize);
-              }
-              setDraggingModule(null);
-            }}
-            onResizeStop={(e, direction, ref, delta, position) => {
-              if (!isMaximized) {
-                updateModulePosition(moduleId, position, {
-                  width: parseInt(ref.style.width),
-                  height: parseInt(ref.style.height),
-                });
-              }
-            }}
-            style={{ zIndex }}
-            dragHandleClassName="module-drag-handle"
-            enableResizing={!isMaximized}
-            bounds="parent"
-            minWidth={280}
-            minHeight={180}
-          >
-            <div
-              className={`h-full border rounded-sm transition-all duration-300 ${
-                isLightMode
-                  ? "bg-white border-gray-300 shadow-lg"
-                  : "bg-black/95 border-graphite/50"
-              } ${draggingModule === moduleId ? "shadow-electric" : ""}`}
-              onClick={() => bringToFront(moduleId)}
-              style={{
-                boxShadow:
-                  draggingModule === moduleId
-                    ? "0 0 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(120, 0, 255, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.3)"
-                    : isLightMode
-                      ? "0 20px 60px -10px rgba(0, 0, 0, 0.2)"
-                      : "0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 60px -10px rgba(0, 0, 0, 0.8)",
-              }}
-            >
-              {/* Module Header - Minimal style like aut0 */}
-              {!isMaximized && (
-                <div
-                  className={`module-drag-handle flex items-center justify-between p-2 border-b transition-all duration-300 ${
-                    isLightMode
-                      ? "bg-gray-50 border-gray-200"
-                      : "border-black/50 bg-black/50"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                    <module.icon className="w-4 h-4 text-electric-cyan" />
-                    <span
-                      className={`text-sm font-mono ${
-                        isLightMode ? "text-gray-700" : "text-steel"
-                      }`}
-                    >
-                      {module.title}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      onClick={() => toggleMaximize(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-cyan/20 transition-all"
-                      title="Maximize/Restore"
-                    >
-                      <Maximize2 className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => refreshModule(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-cyan/20 transition-all"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => openFullVersion(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-violet/20 transition-all"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => closeModule(moduleId)}
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 opacity-60 hover:opacity-100 hover:bg-electric-crimson/20 transition-all"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Module Content */}
-              <div
-                className={isMaximized ? "h-full" : "h-[calc(100%-2.5rem)]"}
-                onDoubleClick={() => toggleMaximize(moduleId)}
-              >
-                {module.content}
-              </div>
-            </div>
-          </Rnd>
+            moduleId={moduleId}
+            title={module.title}
+            icon={module.icon}
+            content={module.content}
+            isMaximized={isMaximized}
+            zIndex={zIndex}
+          />
         );
       })}
 
