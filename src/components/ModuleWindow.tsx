@@ -76,9 +76,7 @@ const ModuleWindow = memo(({
       minHeight={180}
     >
       <div 
-        className={`h-full border rounded-sm transition-all duration-300 bg-black/95 border-graphite/50 ${
-          isDragging ? "shadow-electric" : ""
-        }`}
+        className="h-full border rounded-sm transition-all duration-300 bg-black/95 border-graphite/50"
         onClick={() => bringToFront(moduleId)}
         style={{
           boxShadow: isDragging
@@ -89,7 +87,7 @@ const ModuleWindow = memo(({
         {/* Module Header */}
         <div className="module-drag-handle flex items-center justify-between p-2 border-b border-black/50 bg-black/50">
           <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-            <Icon className="w-4 h-4 text-electric-cyan" />
+            <Icon />
             <span className="text-sm font-mono text-steel">{title}</span>
           </div>
           <div className="flex items-center gap-1">

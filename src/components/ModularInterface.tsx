@@ -766,9 +766,6 @@ export const ModularInterface = () => {
     updateSize(moduleId, { width: size.width, height: size.height });
   };
 
-  const bringToFront = (moduleId: string) => {
-    bringToFront(moduleId);
-  };
 
   // Background dragging
   useEffect(() => {
